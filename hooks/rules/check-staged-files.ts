@@ -8,6 +8,11 @@ export const decide: Decide = ({ input, context }) => {
 
   if (!commitCommand.test(command)) return null;
 
+  const commands = context.configuration().check ?? [];
+
+  // An unconfigured repository gets no checks rather than somebody else's.
+  if (commands.length === 0) return null;
+
   const staged = context.stagedFiles().filter((file) => checkable.test(file));
 
   if (staged.length === 0) return null;
@@ -21,6 +26,6 @@ export const decide: Decide = ({ input, context }) => {
     "",
     failures,
     "",
-    "Most of it is fixed by the project's own fix command. What remains is a real violation.",
+    `Ran: ${commands.join(", ")}. Fix what they report, or change them in ccgh.json.`,
   ].join("\n");
 };

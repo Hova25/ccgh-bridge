@@ -33,8 +33,6 @@ const frenchWords = [
   "vous",
 ];
 
-const pattern = new RegExp(`\\b(${frenchWords.join("|")})\\b`, "gi");
-
 const text = (input: HookInput): string => {
   const { content, new_string: newString, command } = input?.tool_input ?? {};
 
@@ -44,7 +42,12 @@ const text = (input: HookInput): string => {
   return "";
 };
 
-export const decide: Decide = ({ input }) => {
+export const decide: Decide = ({ input, context }) => {
+  const refused = context.configuration().language?.refuse ?? frenchWords;
+
+  if (refused.length === 0) return null;
+
+  const pattern = new RegExp(`\\b(${refused.join("|")})\\b`, "gi");
   const found = new Set(
     [...text(input).matchAll(pattern)].map((match) => (match[1] as string).toLowerCase()),
   );
@@ -52,8 +55,8 @@ export const decide: Decide = ({ input }) => {
   if (found.size < 2) return null;
 
   return [
-    "Everything in this repository is written in English.",
-    `Found French words: ${[...found].sort().join(", ")}.`,
-    "Rewrite the content in English and try again.",
+    "This repository refuses the words below in its prose.",
+    `Found: ${[...found].sort().join(", ")}.`,
+    "Rewrite it, or change language.refuse in ccgh.json.",
   ].join("\n");
 };

@@ -4,8 +4,20 @@ import { decide } from "./check-staged-files";
 
 const commit = { tool_input: { command: "git commit -m x" } };
 
-const context = ({ files, failures = "" }: { files: string[]; failures?: string }) =>
-  fake({ stagedFiles: () => files, check: () => failures });
+const context = ({
+  files,
+  failures = "",
+  check = ["bun run lint"],
+}: {
+  files: string[];
+  failures?: string;
+  check?: string[];
+}) =>
+  fake({
+    stagedFiles: () => files,
+    check: () => failures,
+    configuration: () => ({ check }),
+  });
 
 describe("check-staged-files", () => {
   it("ignores a command that is not a commit", () => {
@@ -28,7 +40,7 @@ describe("check-staged-files", () => {
     });
 
     expect(decision).toMatch(/arrow-constants/);
-    expect(decision).toMatch(/the project's own fix command/);
+    expect(decision).toMatch(/ccgh\.json/);
   });
 
   it("ignores a commit staging nothing it can check", () => {
@@ -51,5 +63,24 @@ describe("check-staged-files", () => {
     });
 
     expect(decision).toMatch(/b\.mjs:4/);
+  });
+
+  it("is inert when the repository configures no check", () => {
+    const decision = decide({
+      input: commit,
+      context: context({ files: ["a.ts"], failures: "a.ts: no semicolon", check: [] }),
+    });
+
+    expect(decision).toBeNull();
+  });
+
+  it("names the commands it ran, rather than a command from another repository", () => {
+    const decision = decide({
+      input: commit,
+      context: context({ files: ["a.ts"], failures: "a.ts: no semicolon" }),
+    });
+
+    expect(decision).toContain("a.ts: no semicolon");
+    expect(decision).toContain("bun run lint");
   });
 });

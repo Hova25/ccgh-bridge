@@ -11,6 +11,7 @@ const context = ({ branch, files }: { branch: string; files: string[] }): Contex
   content: () => content,
   check: () => "",
   fileExists: () => true,
+  configuration: () => ({}),
 });
 
 describe("require-a-home", () => {
