@@ -36,9 +36,8 @@ cause, so the test suite arriving green is the whole acceptance criterion.
 
 - [ ] **Write the failing test**
 
-The tests come with the code. Copy the ten test files from the origin at
-`apps/development-documentation/src/content-model/` into `src/model/`, keeping their names
-and their contents, and change only:
+The tests come with the code. Copy the test files from the origin's content model directory
+into `src/model/`, keeping their names and their contents, and change only:
 
 - the import of `describe`, `expect`, `it` — and `beforeEach` where it appears — from
   `"vitest"` to `"bun:test"`;
@@ -65,7 +64,7 @@ Copy the nine implementation files from the origin, applying the same two mechan
 — the `.js` extensions and nothing else — and dropping `cli.ts`, whose four lines become
 `src/commands/validate.ts` in the next task:
 
-| From `apps/development-documentation/src/content-model/` | To `src/model/` |
+| From the origin's content model | To `src/model/` |
 | --- | --- |
 | `schemas.ts` | `schemas.ts` |
 | `paths.ts` | `paths.ts` |

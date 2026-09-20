@@ -38,10 +38,9 @@ obligation.
 
 - [ ] **Write the failing test**
 
-Copy `apps/development-documentation/scripts/promote-iteration.test.ts` from the origin to
-`src/commands/promote.test.ts`, with the two mechanical changes only. It already covers the
-legal transitions, the relaunch case, the missing iteration, the iteration with no task, and
-the unshipped dependency.
+Copy the origin's `promote-iteration.test.ts` to `src/commands/promote.test.ts`, with the two
+mechanical changes only. It already covers the legal transitions, the relaunch case, the
+missing iteration, the iteration with no task, and the unshipped dependency.
 
 Add the two cases the origin could not express, because its root was a constant:
 
@@ -96,9 +95,9 @@ bun test src/commands/promote.test.ts
 
 - [ ] **Write the implementation**
 
-Copy `apps/development-documentation/scripts/promote-iteration.ts` into
-`src/commands/promote.ts`, keeping `legalTransitions`, `planPromotion` and `applyPromotion`
-unchanged apart from the `.js` extensions and the import paths now pointing at `../model/`.
+Copy the origin's `promote-iteration.ts` into `src/commands/promote.ts`, keeping
+`legalTransitions`, `planPromotion` and `applyPromotion` unchanged apart from the `.js`
+extensions and the import paths now pointing at `../model/`.
 
 Replace the trailing `if (import.meta.url === …)` block with `run`, taking the root from
 `contentRoot({ from: cwd })` instead of `fileURLToPath(new URL("../src/content", import.meta.url))`,

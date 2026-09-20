@@ -32,9 +32,9 @@ creation everywhere they are listed.
 
 - [ ] **Write the failing test**
 
-The pure tests come with the code: copy `apps/development-documentation/scripts/scaffold.test.ts`
-from the origin to `src/commands/scaffold.test.ts`, changing only the `vitest` import to
-`bun:test` and dropping the `.js` from relative imports. It already covers the dated prefix,
+The pure tests come with the code: copy the origin's `scaffold.test.ts` to
+`src/commands/scaffold.test.ts`, changing only the `vitest` import to `bun:test` and dropping
+the `.js` from relative imports. It already covers the dated prefix,
 the suffix on a collision within the same minute, the refusal of a slug that is not a slug,
 and the shape of each skeleton.
 
@@ -104,9 +104,9 @@ bun test src/commands/scaffold.test.ts
 
 - [ ] **Write the implementation**
 
-Copy `apps/development-documentation/scripts/scaffold.ts` from the origin into
-`src/commands/scaffold.ts`, keeping `prefixAt`, `iterationName`, `iterationScaffold`,
-`fixScaffold`, `taskScaffold`, `write`, `existingIterations` and `nextOrder` as they are,
+Copy the origin's `scaffold.ts` into `src/commands/scaffold.ts`, keeping `prefixAt`,
+`iterationName`, `iterationScaffold`, `fixScaffold`, `taskScaffold`, `write`,
+`existingIterations` and `nextOrder` as they are,
 with the two mechanical changes — the `.js` extensions and the import of `SLUG` now coming
 from `../model/schemas`.
 

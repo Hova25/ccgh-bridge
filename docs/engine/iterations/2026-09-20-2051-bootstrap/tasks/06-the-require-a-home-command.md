@@ -35,8 +35,8 @@ so the iteration that writes the workflows arrives knowing.
 
 - [ ] **Write the failing test**
 
-Copy `apps/development-documentation/scripts/require-a-home.test.ts` from the origin with the
-two mechanical changes, then add the case the move creates:
+Copy the origin's `require-a-home.test.ts` with the two mechanical changes, then add the case
+the move creates:
 
 ```ts
 describe("the content path it recognises", () => {
@@ -49,10 +49,10 @@ describe("the content path it recognises", () => {
 ```
 
 This fails against the copied implementation, and that failure is the whole point of the
-task. The origin hardcodes `apps/development-documentation/src/content` in three regular
-expressions. Here the content directory is `docs/` by convention and anything by
-configuration, so the paths handed to this command must already be relative to the content
-root, or the command must be told what it is.
+task. The origin hardcodes its own content directory in three regular expressions. Here the
+content directory is `docs/` by convention and anything by configuration, so the paths handed
+to this command must already be relative to the content root, or the command must be told what
+it is.
 
 Choose the first: **`homeOf` keeps taking repository-relative paths and gains a `content`
 parameter** naming the content directory relative to the repository. The caller resolves it;
@@ -81,9 +81,9 @@ bun test src/commands/require-a-home.test.ts
 
 - [ ] **Write the implementation**
 
-Copy `apps/development-documentation/scripts/require-a-home.ts`, and replace the module-level
-`CONTENT` constant with the parameter: the three regular expressions are built inside
-`homeOf` from `content` rather than at module load. Escape it before interpolating — a
+Copy the origin's `require-a-home.ts`, and replace the module-level `CONTENT` constant with
+the parameter: the three regular expressions are built inside `homeOf` from `content` rather
+than at module load. Escape it before interpolating — a
 content path is a user-supplied string reaching a regular expression, and a dot in a
 directory name would otherwise match anything.
 
