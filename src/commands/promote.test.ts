@@ -165,7 +165,7 @@ describe("planPromotion", () => {
 });
 
 describe("ccgh promote", () => {
-  const probe = "docs/engine/iterations/2026-01-01-0900-probe";
+  const probe = "docs/ccgh-bridge/engine/iterations/2026-01-01-0900-probe";
   const spec = `${probe}/spec.md`;
   let root = "";
 
@@ -174,7 +174,7 @@ describe("ccgh promote", () => {
     await mkdir(join(root, ".git"));
     await mkdir(join(root, probe, "tasks"), { recursive: true });
     await writeFile(
-      join(root, "docs/engine/index.md"),
+      join(root, "docs/ccgh-bridge/engine/index.md"),
       "---\ntitle: Engine\nsummary: The engine.\n---\n\nProse.\n",
       "utf8",
     );

@@ -40,8 +40,15 @@ describe("the repository root", () => {
 });
 
 describe("the content root", () => {
-  it("is docs, by convention", () => {
-    expect(contentRoot({ from: root })).toBe(join(root, "docs"));
+  it("is its own directory under docs, by convention", () => {
+    expect(contentRoot({ from: root })).toBe(join(root, "docs", "ccgh-bridge"));
+  });
+
+  it("leaves a repository's own docs alone", async () => {
+    await mkdir(join(root, "docs", "guides"), { recursive: true });
+    await writeFile(join(root, "docs", "README.md"), "# Getting started\n", "utf8");
+
+    expect(contentRoot({ from: root })).not.toBe(join(root, "docs"));
   });
 
   it("is whatever ccgh.json says, relative to the repository", async () => {
@@ -50,13 +57,13 @@ describe("the content root", () => {
     expect(contentRoot({ from: root })).toBe(join(root, "apps/site/src/content"));
   });
 
-  it("falls back to docs when ccgh.json carries no content key", async () => {
+  it("falls back to the convention when ccgh.json carries no content key", async () => {
     await writeFile(join(root, "ccgh.json"), '{ "other": true }', "utf8");
 
-    expect(contentRoot({ from: root })).toBe(join(root, "docs"));
+    expect(contentRoot({ from: root })).toBe(join(root, "docs", "ccgh-bridge"));
   });
 
-  it("refuses a malformed ccgh.json rather than silently using docs", async () => {
+  it("refuses a malformed ccgh.json rather than silently using the convention", async () => {
     await writeFile(join(root, "ccgh.json"), "{ not json", "utf8");
 
     expect(() => contentRoot({ from: root })).toThrow(/ccgh\.json is not valid JSON/);

@@ -158,12 +158,13 @@ describe("taskScaffold", () => {
 });
 
 describe("ccgh scaffold", () => {
+  const content = join("docs", "ccgh-bridge");
   let root = "";
 
   beforeEach(async () => {
     root = await mkdtemp(join(tmpdir(), "ccgh-scaffold-"));
     await mkdir(join(root, ".git"));
-    await mkdir(join(root, "docs", "engine"), { recursive: true });
+    await mkdir(join(root, content, "engine"), { recursive: true });
   });
 
   afterEach(async () => {
@@ -173,7 +174,7 @@ describe("ccgh scaffold", () => {
   it("writes into the repository it was run in", async () => {
     expect(await run({ argv: ["iteration", "engine/probe"], cwd: root })).toBe(0);
 
-    const written = await readdir(join(root, "docs", "engine", "iterations"));
+    const written = await readdir(join(root, content, "engine", "iterations"));
 
     expect(written).toHaveLength(1);
     expect(written[0]).toMatch(/^\d{4}-\d{2}-\d{2}-\d{4}-probe$/);
@@ -190,7 +191,7 @@ describe("ccgh scaffold", () => {
 
     expect(await run({ argv: ["iteration", "engine/probe"], cwd: root })).toBe(0);
 
-    const written = await readdir(join(root, "docs", "engine", "iterations"));
+    const written = await readdir(join(root, content, "engine", "iterations"));
 
     expect(written).toHaveLength(2);
     expect(written.some((name) => name.endsWith("-probe-2"))).toBe(true);
@@ -198,12 +199,12 @@ describe("ccgh scaffold", () => {
 
   it("numbers a task from the count already in the directory", async () => {
     await run({ argv: ["iteration", "engine/probe"], cwd: root });
-    const [iteration] = await readdir(join(root, "docs", "engine", "iterations"));
+    const [iteration] = await readdir(join(root, content, "engine", "iterations"));
 
     await run({ argv: ["task", `engine/${iteration}`, "first"], cwd: root });
     await run({ argv: ["task", `engine/${iteration}`, "second"], cwd: root });
 
-    const tasks = await readdir(join(root, "docs", "engine", "iterations", iteration, "tasks"));
+    const tasks = await readdir(join(root, content, "engine", "iterations", iteration, "tasks"));
 
     expect(tasks.sort()).toEqual(["01-first.md", "02-second.md"]);
   });

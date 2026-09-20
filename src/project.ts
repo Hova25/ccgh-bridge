@@ -2,7 +2,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 
 const configuration = "ccgh.json";
-const convention = "docs";
+// A consuming repository usually documents itself in `docs/` already, and every file it
+// keeps there would otherwise be read as content and reported as unrecognised. The harness
+// takes a directory of its own inside it.
+const convention = join("docs", "ccgh-bridge");
 
 export const repositoryRoot = ({ from }: { from: string }): string => {
   const start = resolve(from);

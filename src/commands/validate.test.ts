@@ -4,17 +4,19 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { run } from "./validate";
 
+const content = join("docs", "ccgh-bridge");
+
 let root = "";
 
 const write = async ({ file, body }: { file: string; body: string }): Promise<void> => {
-  await mkdir(join(root, "docs", file, ".."), { recursive: true });
-  await writeFile(join(root, "docs", file), body, "utf8");
+  await mkdir(join(root, content, file, ".."), { recursive: true });
+  await writeFile(join(root, content, file), body, "utf8");
 };
 
 beforeEach(async () => {
   root = await mkdtemp(join(tmpdir(), "ccgh-validate-"));
   await mkdir(join(root, ".git"));
-  await mkdir(join(root, "docs"), { recursive: true });
+  await mkdir(join(root, content), { recursive: true });
 });
 
 afterEach(async () => {
@@ -37,7 +39,7 @@ describe("ccgh validate", () => {
     expect(await run({ argv: [], cwd: root })).toBe(1);
   });
 
-  it("reads the root ccgh.json names rather than docs", async () => {
+  it("reads the root ccgh.json names rather than the convention", async () => {
     await writeFile(join(root, "ccgh.json"), '{ "content": "elsewhere" }', "utf8");
     await mkdir(join(root, "elsewhere", "engine"), { recursive: true });
     await writeFile(
@@ -50,7 +52,7 @@ describe("ccgh validate", () => {
   });
 
   it("says so when the content directory does not exist", async () => {
-    await rm(join(root, "docs"), { recursive: true });
+    await rm(join(root, content), { recursive: true });
 
     expect(await run({ argv: [], cwd: root })).toBe(1);
   });
