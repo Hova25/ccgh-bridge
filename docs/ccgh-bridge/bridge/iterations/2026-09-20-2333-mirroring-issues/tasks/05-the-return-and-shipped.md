@@ -29,7 +29,7 @@ is it.
 - Consumes: `writeMirror`, `markShipped` and `writeCompletion` from task 4; `RemoteState` from task 3.
 - Produces: `planSync({ entries, remote }): SyncPlan`, `staleTasks({ entries, now, maxAgeHours })`, `closingIssues({ body })`, `completionsFor({ entries, pr, mergedAt, body })`, `completionComment({ completion, base })`. Tasks 7 and 8 use them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Both come with the code. Copy them with the two mechanical changes. They already cover an
 iteration whose last task closes, an iteration with one task still open, an issue reopened
@@ -48,7 +48,7 @@ it("refuses to ship an iteration that has no tasks at all", () => {
 An iteration with no tasks has no open tasks either, and "every task is closed" is true of an
 empty list. Shipping on that is a status written from nothing.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/bridge
@@ -57,15 +57,15 @@ bun test src/bridge
 If it passes immediately, the origin already guards it — check where, and keep the test anyway
 rather than deleting the question.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy `sync.ts` and `completion.ts`, imports only, plus whatever the empty-iteration assertion
 requires if it was genuinely missing.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
