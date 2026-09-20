@@ -16,10 +16,10 @@ gates, a GitHub bridge with one writer per field, nine hooks refusing what the r
 and a documentation site rendering all of it. Roughly ninety files, eight decision records,
 and several months of arguments settled.
 
-It is also welded to that one repository. Two hundred and fifty-four call sites say
-`pnpm --filter @nauvia/development-documentation <script>`. The content root is a path
-relative to the script that reads it, which forces the content to live inside the Astro
-application. The site is branded. None of it can be pointed at a second project.
+It is also welded to that one repository. Two hundred and fifty-four call sites reach the
+engine through a pnpm filter naming that repository's documentation application. The content
+root is a path relative to the script that reads it, which forces the content to live inside
+the Astro application. The site is branded. None of it can be pointed at a second project.
 
 The next project will want the same workflow, and copying ninety files into it would create
 two divergent copies on the first day.

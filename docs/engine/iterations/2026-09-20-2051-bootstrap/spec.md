@@ -23,8 +23,8 @@ const root = fileURLToPath(new URL("../src/content", import.meta.url));
 ```
 
 That single line, repeated four times, is what forces a project's content to live inside the
-documentation application, and what makes every call site read
-`pnpm --filter @nauvia/development-documentation <script>`.
+documentation application, and what makes every call site reach the engine through a pnpm
+filter naming that application.
 
 Nothing else about the engine is project-specific. It is a library with four hardcoded
 front doors.
@@ -104,7 +104,7 @@ a different root passes a different `from`.
 today is a repository whose content already lives elsewhere and should not be moved:
 
 ```json
-{ "content": "apps/development-documentation/src/content" }
+{ "content": "apps/site/src/content" }
 ```
 
 ### The command
