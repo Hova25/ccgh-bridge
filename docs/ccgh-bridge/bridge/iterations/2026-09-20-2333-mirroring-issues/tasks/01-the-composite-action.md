@@ -30,7 +30,7 @@ runner — the iteration changes shape here rather than at task 9.
 - Consumes: `bin/ccgh` and `bun.lock`, both already committed.
 - Produces: the action, addressed as `./` in this repository and `<owner>/<repo>@<ref>` elsewhere. Task 9 writes the workflows that use it; nothing else depends on it.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 What can be asserted without a runner is that the action and the workflows agree about what
 exists. `tests/action.test.ts`:
@@ -68,13 +68,13 @@ describe("the composite action", () => {
 The third is the one that matters. A tag cannot test the commit that changes the action, so
 this repository must never reach its own action by one.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test tests/action.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 `action.yml` as the specification gives it, with one input, `command`, and one output: whatever
 `ccgh` printed. `bun install --frozen-lockfile` runs with `working-directory:
@@ -91,7 +91,7 @@ checkout, which may not be a JavaScript project at all.
 
 `--help` because there is no bridge yet and the point is that the command runs at all.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -105,4 +105,4 @@ Then prove the other address. From a scratch repository with a workflow that say
 `uses: Hova25/ccgh-bridge@<this branch>`, the same job must pass. Both paths are the same file
 and only one of them is exercised by this repository's own pull requests.
 
-- [ ] **Commit**
+- [x] **Commit**
