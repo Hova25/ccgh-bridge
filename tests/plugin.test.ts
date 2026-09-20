@@ -94,3 +94,27 @@ describe("the hook wiring", () => {
     }
   });
 });
+
+describe("the marketplace entry", () => {
+  const marketplace = async (): Promise<{
+    name: string;
+    plugins: Array<{ name: string; source: string }>;
+  }> => JSON.parse(await readFile(join(root, ".claude-plugin/marketplace.json"), "utf8"));
+
+  it("points at a plugin that exists, by the name the manifest declares", async () => {
+    const entry = await marketplace();
+
+    expect(entry.plugins).toHaveLength(1);
+    expect(entry.plugins[0]?.name).toBe((await manifest()).name as string);
+  });
+
+  it("is the marketplace this repository's settings enable", async () => {
+    const entry = await marketplace();
+    const settings = JSON.parse(await readFile(join(root, ".claude/settings.json"), "utf8"));
+
+    expect(Object.keys(settings.extraKnownMarketplaces)).toEqual([entry.name]);
+    expect(Object.keys(settings.enabledPlugins)).toEqual([
+      `${entry.plugins[0]?.name}@${entry.name}`,
+    ]);
+  });
+});

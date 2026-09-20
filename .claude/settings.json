@@ -1,0 +1,13 @@
+{
+  "enabledPlugins": {
+    "ccgh@ccgh-bridge": true
+  },
+  "extraKnownMarketplaces": {
+    "ccgh-bridge": {
+      "source": {
+        "source": "directory",
+        "path": "."
+      }
+    }
+  }
+}

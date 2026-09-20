@@ -1,0 +1,11 @@
+{
+  "name": "ccgh-bridge",
+  "owner": { "name": "Hova25" },
+  "plugins": [
+    {
+      "name": "ccgh",
+      "source": "./",
+      "description": "The development lifecycle this repository ships."
+    }
+  ]
+}

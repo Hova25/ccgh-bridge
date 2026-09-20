@@ -30,7 +30,7 @@ plugin, and a plugin nobody has run is a plugin nobody knows is broken.
 - Consumes: everything tasks 1 to 5 produced.
 - Produces: the marketplace name `ccgh-bridge` and the plugin name `ccgh`, so the installed identifier is `ccgh@ccgh-bridge`. The iteration that publishes remotely keeps both names.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Add to `tests/plugin.test.ts`:
 
@@ -57,13 +57,13 @@ Two files naming each other by hand is two files that drift. The test is cheap a
 failure it prevents — a plugin enabled under a name nothing provides — reports as "not
 installed" with no explanation.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test tests/plugin.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 `.claude-plugin/marketplace.json` declares one plugin, sourced from the repository itself:
 
@@ -82,7 +82,7 @@ deliberately left to prompt every time, because it is the gate a human passes.
 The README gains the two things a reader needs and does not have: the install command, and
 the sentence that Bun must be present first.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -104,4 +104,4 @@ Four things must be true, and none of them can be checked from the test suite:
 The fourth is the one to check most carefully. If it ever stops prompting, the human gate is
 gone and nothing else in this repository will notice.
 
-- [ ] **Commit**
+- [x] **Commit**
