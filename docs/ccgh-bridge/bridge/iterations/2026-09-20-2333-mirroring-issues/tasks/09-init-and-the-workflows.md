@@ -30,7 +30,7 @@ Each workflow is around fifteen lines, because everything heavy belongs to the a
 - Consumes: `repositoryRoot` and `configuration`.
 - Produces: `run({ argv, cwd })`, and the five files in the consumer's `.github/workflows/`. Task 10 runs it here.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 ```ts
 describe("ccgh init", () => {
@@ -82,13 +82,13 @@ else's `.github/` and gets it wrong destroys work that has nothing to do with th
 Ownership is a marker comment on the first line — `# written by ccgh init; edits are
 overwritten` — rather than a manifest, because a manifest is one more file to go stale.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/commands/init.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 The five templates, adapted from the origin's, with `pnpm/action-setup`, `setup-node`,
 `pnpm install` and the bot identity all deleted — the action does them — and the body replaced
@@ -102,7 +102,7 @@ iterations ago and it answers here unchanged.
 `init` writes each file, refusing any that exists without the marker, and stores `--from` in
 `ccgh.json` under `action`, defaulting to `Hova25/ccgh-bridge@v1`.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -111,4 +111,4 @@ bun run verify
 Then run it here, with `--from ./`, and read the diff. This repository's own workflows are the
 first consumer, and `./` is the reference that keeps the action testable before any tag exists.
 
-- [ ] **Commit**
+- [x] **Commit**

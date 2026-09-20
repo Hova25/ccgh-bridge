@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { run as bridge } from "../src/commands/bridge";
 import { run as docs } from "../src/commands/docs";
+import { run as init } from "../src/commands/init";
 import { run as promote } from "../src/commands/promote";
 import { run as requireAHome } from "../src/commands/require-a-home";
 import { run as scaffold } from "../src/commands/scaffold";
@@ -12,6 +13,7 @@ const commands: Record<string, (input: { argv: string[]; cwd: string }) => Promi
   promote,
   docs,
   bridge,
+  init,
   "require-a-home": requireAHome,
 };
 
@@ -25,6 +27,7 @@ const usage = [
   "  ccgh require-a-home <base> <changed...>",
   "  ccgh docs [--port <n>] [--build]",
   "  ccgh bridge <push|sync|fixes|complete|reconcile|relink> [--dry-run]",
+  "  ccgh init [--from <owner/repo@ref>]",
   "",
 ].join("\n");
 

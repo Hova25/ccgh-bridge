@@ -1,0 +1,39 @@
+# written by ccgh init; edits are overwritten
+name: ccgh-sync
+
+on:
+  issues:
+    types: [closed, reopened, deleted]
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: ccgh-bridge-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - if: github.event_name == 'pull_request' && github.event.pull_request.merged
+        uses: ./
+        with:
+          command: bridge complete
+        env:
+          BRIDGE_PR: ${{ github.event.pull_request.number }}
+          BRIDGE_PR_BODY: ${{ github.event.pull_request.body }}
+          BRIDGE_BASE: ${{ github.event.pull_request.base.ref }}
+          BRIDGE_MERGED_AT: ${{ github.event.pull_request.merged_at }}
+
+      - uses: ./
+        with:
+          command: bridge sync

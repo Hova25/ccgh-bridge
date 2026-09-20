@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = new URL("..", import.meta.url).pathname;
@@ -18,6 +18,17 @@ describe("the composite action", () => {
     expect(body).toContain("--frozen-lockfile");
   });
 
+  it("carries the token itself, because GitHub does not put it in the environment", async () => {
+    const body = await action();
+
+    expect(body).toContain("github.token");
+    expect(body).toContain("GITHUB_TOKEN:");
+  });
+
+  it("commits as somebody, because git refuses a commit from nobody", async () => {
+    expect(await action()).toContain("user.email");
+  });
+
   it("takes a whole command, so that validating uses the same action as mirroring", async () => {
     const body = await action();
 
@@ -26,13 +37,20 @@ describe("the composite action", () => {
   });
 
   it("is exercised by this repository through a path, and never pinned to a tag", async () => {
-    const workflow = await readFile(join(root, ".github/workflows/ccgh-action.yml"), "utf8");
+    const directory = join(root, ".github/workflows");
+    const bodies = await Promise.all(
+      (await readdir(directory)).map((name) => readFile(join(directory, name), "utf8")),
+    );
 
-    expect(workflow).toContain("uses: ./");
+    // The path form is what makes the action testable by the pull request that changes it.
+    expect(bodies.some((body) => body.includes("uses: ./"))).toBe(true);
 
-    // A second job fetches the action by reference, because both addresses are the same file
-    // and only the path is exercised otherwise. What it must never be is a tag: a tag cannot
-    // test the commit that changes the action.
-    expect(workflow).not.toMatch(/uses:\s*[\w-]+\/ccgh-bridge@v/);
+    // The reference form is exercised too, because both addresses are the same file and only
+    // the path is reached otherwise. What it must never be is a tag.
+    expect(bodies.some((body) => /uses:\s*[\w-]+\/ccgh-bridge@/.test(body))).toBe(true);
+
+    for (const body of bodies) {
+      expect(body).not.toMatch(/uses:\s*[\w-]+\/ccgh-bridge@v/);
+    }
   });
 });
