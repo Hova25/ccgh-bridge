@@ -1,4 +1,4 @@
-# cc-gh-bridge
+# ccgh-bridge
 
 A Claude Code plugin that gives a repository a development lifecycle: specifications and
 tasks written as content, promoted through human gates, mirrored to GitHub issues, and
@@ -16,8 +16,11 @@ It ships as one plugin carrying four things:
 - **A documentation site**, started with `ccgh docs`, that renders the repository's content
   tree.
 
-A consuming repository keeps only two things of its own: its content under `docs/`, and the
-GitHub Actions workflows that `ccgh init` writes for it.
+A consuming repository keeps only two things of its own: its content under
+`docs/ccgh-bridge/`, and the GitHub Actions workflows that `ccgh init` writes for it. The
+directory is a convention, not a rule — `ccgh.json` at the repository root can name another
+one — and it sits inside `docs/` rather than owning it, so a repository's own documentation
+is left alone.
 
 ## Requirements
 
@@ -29,4 +32,5 @@ directly by Bun — there is no build step and no compiled binary to download.
 Being extracted from the repository it grew in. Nothing is installable yet.
 
 This repository develops itself with its own workflow: its specifications, decisions and
-tasks live under `docs/`, and every change to it goes through the lifecycle it ships.
+tasks live under `docs/ccgh-bridge/`, and every change to it goes through the lifecycle it
+ships.
