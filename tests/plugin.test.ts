@@ -23,6 +23,19 @@ describe("the manifest", () => {
 });
 
 describe("every skill", () => {
+  it("is one of the eight, and all eight are here", async () => {
+    expect(await skills()).toEqual([
+      "decompose-into-tasks",
+      "launch-iteration",
+      "open-fix",
+      "open-iteration",
+      "ship-iteration",
+      "validate-iteration",
+      "write-brainstorm",
+      "write-spec",
+    ]);
+  });
+
   it("is a directory holding a SKILL.md", async () => {
     for (const name of await skills()) {
       const body = await readFile(join(root, "skills", name, "SKILL.md"), "utf8");
