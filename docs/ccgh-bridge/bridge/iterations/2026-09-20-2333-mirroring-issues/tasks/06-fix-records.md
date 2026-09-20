@@ -28,7 +28,7 @@ already made one.
 - Consumes: `GitHubClient` from task 2, `writeIssueNumbers` and `writePullRequest` from task 4.
 - Produces: `planFixIssues({ entries, remote, arriving, pullRequest })`, `abandonedFixIssues({ entries, remote })`, `issuesArriving({ entries, arriving })`, `bodyClosing({ body, issues })`. Tasks 7 and 8 use them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Copy `fixes.test.ts` with the two mechanical changes. It covers a fix arriving with its pull
 request, a fix already carrying an issue, and a body that already has its `Closes` line.
@@ -37,13 +37,13 @@ request, a fix already carrying an issue, and a body that already has its `Close
 a pull request body on every run. Keep that assertion in view: an edit with no change is a
 notification with no news, and people stop reading them.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/bridge/fixes.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy `fixes.ts`, imports only.
 
@@ -51,10 +51,10 @@ The one thing to check while moving it: `planFixIssues` takes `arriving` as a se
 already relative to the content root. The CLI is what strips the prefix, so the prefix belongs
 to task 8 and not here — the module must not learn where content lives.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
