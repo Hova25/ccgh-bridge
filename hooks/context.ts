@@ -1,5 +1,7 @@
 // What a rule may ask about the world. Task 4 wires it to the real shell; a test passes a
 // literal, which is what lets a rule about `git commit` be decided without a `git commit`.
+import type { Configuration } from "../src/configuration";
+
 export type Context = {
   currentBranch: () => string;
   stagedFiles: () => string[];
@@ -8,6 +10,9 @@ export type Context = {
   // receives it already resolved so that it never reads a file system to make a decision.
   content: () => string;
   fileExists: (file: string) => boolean;
+  // What the repository asked for. Read once, at the entry point, so that a rule stays a
+  // decision rather than a reader of files.
+  configuration: () => Configuration;
 };
 
 export type HookInput = {

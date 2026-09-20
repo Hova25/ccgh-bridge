@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { relative } from "node:path";
+import { configuration } from "../src/configuration";
 import { contentRoot, repositoryRoot } from "../src/project";
 import type { Context } from "./context";
 
@@ -25,10 +26,15 @@ export const shell: Context = {
   stagedFiles: () =>
     git("diff", "--cached", "--name-only", "--diff-filter=d").split("\n").filter(Boolean),
   check: ({ files }) =>
-    attempt({
-      command: "bun",
-      args: ["run", "--cwd", repositoryRoot({ from: project() }), "lint", ...files],
-    }).trim(),
+    (configuration({ from: project() }).check ?? [])
+      .map((command) => {
+        const [name, ...args] = command.split(" ");
+
+        return attempt({ command: name as string, args: [...args, ...files] });
+      })
+      .join("\n")
+      .trim(),
   content: () => relative(repositoryRoot({ from: project() }), contentRoot({ from: project() })),
   fileExists: (file) => existsSync(file),
+  configuration: () => configuration({ from: project() }),
 };

@@ -32,7 +32,7 @@ is why it is its own task and why its tests come before its code.
 - Consumes: `repositoryRoot` from `src/project` (the engine), and the two rules from task 3.
 - Produces: `const configuration = ({ from }: { from: string }): Configuration` from `src/configuration.ts`, where `type Configuration = { content?: string; check?: string[]; language?: { refuse: string[] } }`. `contentRoot` keeps its own reading of the file; this is the general one, and later iterations add keys to it rather than to `contentRoot`.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 `src/configuration.test.ts` covers the file itself:
 
@@ -91,13 +91,13 @@ it("refuses what the repository listed instead", () => {
 The middle one is the important assertion, and the reason the default is worth stating out
 loud: a repository that writes French is refused until it says so.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/configuration.test.ts hooks/rules/check-staged-files.test.ts hooks/rules/enforce-language.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 `src/configuration.ts` reads `ccgh.json` at the repository root, parses it, and returns `{}`
 when the file is absent. It throws on malformed JSON, for the reason the engine already
@@ -122,10 +122,10 @@ This repository's own `ccgh.json` is created here:
 No `content`: `docs/ccgh-bridge/` is the convention and this repository follows it. No
 `language`: the built-in list is what it wants.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
