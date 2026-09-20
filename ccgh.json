@@ -1,4 +1,5 @@
 {
   "check": ["bun run lint"],
-  "repository": "Hova25/ccgh-bridge"
+  "repository": "Hova25/ccgh-bridge",
+  "site": "https://hova25.github.io/ccgh-bridge"
 }

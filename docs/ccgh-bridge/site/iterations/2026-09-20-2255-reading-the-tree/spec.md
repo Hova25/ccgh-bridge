@@ -165,8 +165,16 @@ looked for.
 
 **`--build` without `site`.** Refused before Astro starts, naming the key.
 
-**Port already held.** Astro's own message, which names the port and picks another; the
-command does not hide it.
+**A dev server already running.** Astro 7 keeps its dev server alive across invocations and
+refuses to start a second one for the same project root, reporting the port the first one took
+rather than the one that was asked for. `ccgh docs` does not hide that message. Stopping it
+takes `astro dev stop` with the same root, which is the plugin's `site/` — worth a
+`ccgh docs --stop` later, and recorded here rather than discovered again.
+
+**A published site whose links ignore its base.** Astro's `base` reaches the assets it emits
+and nothing else. Every URL this site builds is its own, so `urlFor` reads the base too, and
+so do the brand link and the fetch of the search index. Task 6 caught thirty such links by
+crawling the built output; the same crawl is what proves it.
 
 **`.ccgh/` not ignored.** The build writes into the repository being read. `ccgh docs` says
 so the first time it creates the directory, and says to add it to `.gitignore`, because a

@@ -40,7 +40,10 @@ carries is run by Bun.
 {
   "content": "docs/ccgh-bridge",
   "check": ["bun run lint"],
-  "language": { "refuse": [] }
+  "language": { "refuse": [] },
+  "title": "The harness",
+  "repository": "owner/name",
+  "site": "https://owner.github.io/name"
 }
 ```
 
@@ -49,6 +52,11 @@ staged files; with none, it runs nothing rather than somebody else's checks. `la
 is the word list the prose hook refuses — it ships with a list of French words, which is what
 the repository this grew in needed, so a repository that writes French silences it here.
 
+`title` names the site, which is otherwise the repository's directory. `repository` is where
+its issues live, so that an issue number becomes a link; without it the number is printed
+plain. `site` is where the built site is published, and `ccgh docs --build` refuses without
+it — a site built with the wrong base works locally and breaks the moment it is published.
+
 ## Requirements
 
 [Bun](https://bun.sh). The `ccgh` executable is a TypeScript file with a shebang, run
@@ -56,9 +64,9 @@ directly by Bun — there is no build step and no compiled binary to download.
 
 ## Status
 
-The engine and the plugin shell are done: the skills, the hooks and the `ccgh` command all
-work, and this repository enables the plugin on itself. The documentation site and the GitHub
-bridge are not built yet — `ccgh docs` and `ccgh init` do not exist.
+The engine, the plugin shell and the site are done: the skills, the hooks, `ccgh` and
+`ccgh docs` all work, and this repository enables the plugin on itself. The GitHub bridge is
+not built yet — `ccgh init` does not exist, so no issue is ever created.
 
 This repository develops itself with its own workflow: its specifications, decisions and
 tasks live under `docs/ccgh-bridge/`, and every change to it goes through the lifecycle it

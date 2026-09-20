@@ -14,6 +14,8 @@ const { title, crumbs } = Astro.props;
 
 // The repository being read decides what this site is called; `ccgh docs` resolves it.
 const name = process.env.CCGH_SITE_NAME ?? "docs";
+// A published site is served under a path, and a link to "/" leaves it.
+const home = import.meta.env.BASE_URL;
 ---
 
 <html lang="en">
@@ -42,7 +44,7 @@ const name = process.env.CCGH_SITE_NAME ?? "docs";
     <a class="skip" href="#content">Skip to content</a>
     <div class="shell">
       <nav class="sidebar" id="tree-panel" aria-label="Sections">
-        <a class="brand" href="/">{name}</a>
+        <a class="brand" href={home}>{name}</a>
         <Search />
         <ThemeToggle />
         <slot name="tree" />

@@ -28,7 +28,9 @@ describe("what ccgh docs tells Astro", () => {
     expect(outDir).toBe(join(root, ".ccgh", "site"));
   });
 
-  it("serves rather than builds unless asked", () => {
+  it("serves rather than builds unless asked", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "site": "https://x.example.com" }', "utf8");
+
     expect(plan({ argv: [], cwd: root }).mode).toBe("dev");
     expect(plan({ argv: ["--build"], cwd: root }).mode).toBe("build");
   });
@@ -50,7 +52,9 @@ describe("what ccgh docs tells Astro", () => {
     expect(await run({ argv: [], cwd: root })).toBe(1);
   });
 
-  it("builds where node_modules is, because Astro runs what it writes there", () => {
+  it("builds where node_modules is, because Astro runs what it writes there", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "site": "https://x.example.com" }', "utf8");
+
     const { buildDir, outDir } = plan({ argv: ["--build"], cwd: root });
 
     expect(buildDir.startsWith(root)).toBe(false);
@@ -60,6 +64,9 @@ describe("what ccgh docs tells Astro", () => {
   it("gives each repository its own build directory, so two never collide", async () => {
     const other = await mkdtemp(join(tmpdir(), "ccgh-other-"));
     await mkdir(join(other, ".git"));
+    const site = '{ "site": "https://x.example.com" }';
+    await writeFile(join(root, "ccgh.json"), site, "utf8");
+    await writeFile(join(other, "ccgh.json"), site, "utf8");
 
     expect(plan({ argv: ["--build"], cwd: root }).buildDir).not.toBe(
       plan({ argv: ["--build"], cwd: other }).buildDir,
@@ -84,5 +91,32 @@ describe("what ccgh docs tells Astro", () => {
     await writeFile(join(root, "ccgh.json"), '{ "repository": "Hova25/ccgh-bridge" }', "utf8");
 
     expect(plan({ argv: [], cwd: root }).repository).toBe("Hova25/ccgh-bridge");
+  });
+
+  it("asks for nothing when it is only serving", () => {
+    expect(plan({ argv: [], cwd: root }).site).toBeUndefined();
+  });
+
+  it("says which key is missing, so the refusal is actionable", () => {
+    expect(() => plan({ argv: ["--build"], cwd: root })).toThrow(/site.*ccgh\.json/);
+  });
+
+  it("refuses to build a site whose links would be dead", async () => {
+    expect(await run({ argv: ["--build"], cwd: root })).toBe(1);
+  });
+
+  it("takes the base from the path of the site it was given", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "site": "https://x.github.io/repo" }', "utf8");
+
+    const built = plan({ argv: ["--build"], cwd: root });
+
+    expect(built.site).toBe("https://x.github.io/repo");
+    expect(built.base).toBe("/repo/");
+  });
+
+  it("takes no base from a site published at a domain root", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "site": "https://docs.example.com" }', "utf8");
+
+    expect(plan({ argv: ["--build"], cwd: root }).base).toBe("/");
   });
 });

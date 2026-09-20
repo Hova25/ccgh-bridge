@@ -15,14 +15,33 @@ export type Plan = {
   // <owner>/<repository>, so that an issue number can become a link. Empty when the
   // repository has not said where its issues live, and the site then prints the number.
   repository: string;
+  // Only on a build, and only from configuration. A site published under a path needs that
+  // path in every link, and a link that is right locally and wrong once published is the
+  // failure this pair exists to prevent.
+  site?: string;
+  base?: string;
   port?: string;
 };
 
 const plugin = fileURLToPath(new URL("../..", import.meta.url));
 
+const published = ({ site }: { site: string }): { site: string; base: string } => {
+  const path = new URL(site).pathname;
+
+  return { site, base: path.endsWith("/") ? path : `${path}/` };
+};
+
 export const plan = ({ argv, cwd }: { argv: string[]; cwd: string }): Plan => {
   const repository = repositoryRoot({ from: cwd });
+  const settings = configuration({ from: cwd });
   const port = argv.includes("--port") ? argv[argv.indexOf("--port") + 1] : undefined;
+  const building = argv.includes("--build");
+
+  if (building && !settings.site) {
+    throw new Error(
+      'no site to build: add "site" to ccgh.json, naming where this site is published',
+    );
+  }
 
   // The content store belongs to the repository being read: left where Astro puts it, it would
   // sit beside the site, in the plugin's own directory, shared by every project on this
@@ -34,31 +53,31 @@ export const plan = ({ argv, cwd }: { argv: string[]; cwd: string }): Plan => {
   // nothing. It builds under the plugin, keyed by repository so two never collide, and `run`
   // moves the finished site into `.ccgh/site` afterwards.
   return {
-    mode: argv.includes("--build") ? "build" : "dev",
+    mode: building ? "build" : "dev",
     content: contentRoot({ from: cwd }),
     cacheDir: join(repository, ".ccgh", "cache"),
     buildDir: join(plugin, ".ccgh-build", Bun.hash(repository).toString(36)),
     outDir: join(repository, ".ccgh", "site"),
-    name: configuration({ from: cwd }).title ?? basename(repository),
-    repository: configuration({ from: cwd }).repository ?? "",
+    name: settings.title ?? basename(repository),
+    repository: settings.repository ?? "",
+    ...(building && settings.site ? published({ site: settings.site }) : {}),
     ...(port ? { port } : {}),
   };
 };
 
 export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promise<number> => {
-  const {
-    mode,
-    content,
-    cacheDir,
-    buildDir,
-    outDir,
-    name,
-    repository: origin,
-    port,
-  } = plan({
-    argv,
-    cwd,
-  });
+  let settings: Plan;
+
+  try {
+    settings = plan({ argv, cwd });
+  } catch (error) {
+    // A refusal the user can act on, rather than a stack trace.
+    process.stderr.write(`${(error as Error).message}\n`);
+
+    return 1;
+  }
+
+  const { mode, content, cacheDir, buildDir, outDir, name, repository: origin, port } = settings;
 
   if (!existsSync(content)) {
     process.stderr.write(`no content directory at ${content}\n`);
@@ -95,6 +114,7 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
         CCGH_OUT_DIR: buildDir,
         CCGH_SITE_NAME: name,
         CCGH_REPOSITORY: origin,
+        ...(settings.site ? { CCGH_SITE: settings.site, CCGH_BASE: settings.base } : {}),
       },
       stdio: ["inherit", "inherit", "inherit"],
     },
