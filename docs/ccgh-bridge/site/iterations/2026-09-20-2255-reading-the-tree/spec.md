@@ -93,16 +93,33 @@ The project root is the plugin. The content is elsewhere, and so is everything A
 | --- | --- |
 | `glob({ base })` | `contentRoot({ from: project })`, absolute |
 | `cacheDir` | `<project>/.ccgh/cache` |
-| `outDir` | `<project>/.ccgh/site` |
+| Astro's `outDir` | `<plugin>/.ccgh-build/<key>` |
+| where the site lands | `<project>/.ccgh/site`, moved there after the build |
+| the process's working directory | `<plugin>` |
 | `site`, `base` | from `ccgh.json`, on a build only |
 
 `project` is `CLAUDE_PROJECT_DIR`, falling back to the working directory — the same resolution
 `hooks/shell.ts` already uses.
 
-Both redirections are load-bearing rather than tidy. Left at their defaults they write into
-the plugin's own directory, which Claude Code replaces on every plugin update, and which is
-shared by every project on the machine: a collection cache built from one repository would be
-served to another, and it would read as stale content rather than as the wrong repository.
+The cache redirection is load-bearing rather than tidy. Left where Astro puts it, the content
+store sits beside the site, in the plugin's own directory, which Claude Code replaces on every
+plugin update and which is shared by every project on the machine: a store built from one
+repository would be served to another, and would read as stale content rather than as the
+wrong repository.
+
+**The build goes the other way, and task 1 found out why.** Astro writes a prerender entry
+point and then runs it with Node, which resolves that file's imports from where it sits. An
+output directory inside a repository that has no `node_modules` resolves nothing, and the
+build dies on a missing package with the plugin's own dependency named in the error. So Astro
+builds under the plugin, in a directory keyed by repository so that two never collide, and the
+finished site is moved into `<project>/.ccgh/site` afterwards. For the same reason the process
+runs with the plugin as its working directory: the prerender entry point follows the working
+directory, not the project root.
+
+What remains beside the site after a run is `site/.astro` and `node_modules/.vite` — types and
+schemas derived from the collection definitions, identical for every project, carrying no
+repository's content. Checked rather than assumed: the content store is `data-store.json`, and
+it is in the cache directory.
 
 ### The command
 

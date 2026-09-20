@@ -1,0 +1,26 @@
+---
+import { getCollection } from "astro:content";
+
+const domains = (await getCollection("domains")).sort((first, second) =>
+  first.id.localeCompare(second.id),
+);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Domains</title>
+  </head>
+  <body>
+    <h1>Domains</h1>
+    <ul>
+      {
+        domains.map((domain) => (
+          <li>
+            <strong>{domain.data.title}</strong> — {domain.data.summary}
+          </li>
+        ))
+      }
+    </ul>
+  </body>
+</html>
