@@ -1,0 +1,27 @@
+---
+import type { TreeNode } from "../../../src/docs/tree";
+import Shell from "./Shell.astro";
+import Tree from "./Tree.astro";
+
+type Props = {
+  title: string;
+  meta: string | null;
+  crumbs: Array<{ label: string; href: string }>;
+  tree: TreeNode[];
+};
+
+const { title, meta, crumbs, tree } = Astro.props;
+---
+
+<Shell title={title} crumbs={crumbs} tree={tree}>
+  <Tree slot="tree" nodes={tree} />
+  {meta && <p class="meta">{meta}</p>}
+  <slot />
+</Shell>
+
+<style>
+  .meta {
+    color: var(--text-muted);
+    margin: 0;
+  }
+</style>

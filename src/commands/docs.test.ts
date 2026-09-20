@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { plan, run } from "./docs";
 
 let root = "";
@@ -66,5 +66,15 @@ describe("what ccgh docs tells Astro", () => {
     );
 
     await rm(other, { recursive: true, force: true });
+  });
+
+  it("names the site after the repository, not after the one this came from", () => {
+    expect(plan({ argv: [], cwd: root }).name).toBe(basename(root));
+  });
+
+  it("lets a repository choose another name", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "title": "The harness" }', "utf8");
+
+    expect(plan({ argv: [], cwd: root }).name).toBe("The harness");
   });
 });

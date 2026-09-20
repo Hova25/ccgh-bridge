@@ -1,7 +1,8 @@
 import { existsSync } from "node:fs";
 import { cp, mkdir, rm } from "node:fs/promises";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { configuration } from "../configuration";
 import { contentRoot, repositoryRoot } from "../project";
 
 export type Plan = {
@@ -10,6 +11,7 @@ export type Plan = {
   cacheDir: string;
   buildDir: string;
   outDir: string;
+  name: string;
   port?: string;
 };
 
@@ -34,12 +36,13 @@ export const plan = ({ argv, cwd }: { argv: string[]; cwd: string }): Plan => {
     cacheDir: join(repository, ".ccgh", "cache"),
     buildDir: join(plugin, ".ccgh-build", Bun.hash(repository).toString(36)),
     outDir: join(repository, ".ccgh", "site"),
+    name: configuration({ from: cwd }).title ?? basename(repository),
     ...(port ? { port } : {}),
   };
 };
 
 export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promise<number> => {
-  const { mode, content, cacheDir, buildDir, outDir, port } = plan({ argv, cwd });
+  const { mode, content, cacheDir, buildDir, outDir, name, port } = plan({ argv, cwd });
 
   if (!existsSync(content)) {
     process.stderr.write(`no content directory at ${content}\n`);
@@ -74,6 +77,7 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
         CCGH_CONTENT: content,
         CCGH_CACHE_DIR: cacheDir,
         CCGH_OUT_DIR: buildDir,
+        CCGH_SITE_NAME: name,
       },
       stdio: ["inherit", "inherit", "inherit"],
     },

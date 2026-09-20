@@ -1,0 +1,63 @@
+<button id="theme-toggle" type="button" aria-pressed="false">
+  <span class="label">Light theme</span>
+</button>
+
+<script>
+  const button = document.getElementById("theme-toggle") as HTMLButtonElement;
+  const label = button.querySelector(".label") as HTMLSpanElement;
+
+  const systemPrefersLight = (): boolean =>
+    window.matchMedia("(prefers-color-scheme: light)").matches;
+
+  const currentTheme = (): "light" | "dark" => {
+    const stamped = document.documentElement.dataset.theme;
+
+    if (stamped === "light" || stamped === "dark") return stamped;
+
+    return systemPrefersLight() ? "light" : "dark";
+  };
+
+  const show = (theme: "light" | "dark") => {
+    button.setAttribute("aria-pressed", String(theme === "light"));
+    label.textContent = theme === "light" ? "Dark theme" : "Light theme";
+  };
+
+  const apply = (theme: "light" | "dark") => {
+    document.documentElement.dataset.theme = theme;
+
+    try {
+      localStorage.setItem("ccgh-theme", theme);
+    } catch {
+      // The choice holds for this page even when storage is refused.
+    }
+
+    show(theme);
+  };
+
+  show(currentTheme());
+
+  button.addEventListener("click", () => {
+    apply(currentTheme() === "light" ? "dark" : "light");
+  });
+</script>
+
+<style>
+  button {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font: inherit;
+    min-height: var(--row-height);
+    padding: 4px calc(var(--space) * 1.25);
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    margin-bottom: calc(var(--space) * 2);
+  }
+
+  button:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+</style>
