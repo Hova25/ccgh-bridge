@@ -30,7 +30,7 @@ measured.
 - Consumes: nothing.
 - Produces: `ratioOf({ foreground, background }): number` from `src/docs/contrast.ts`, and the custom properties every component in task 4 uses — `--surface`, `--surface-side`, `--surface-raised`, `--surface-hover`, `--surface-current`, `--border`, `--rail`, `--text`, `--text-muted`, `--text-section`, `--accent`, `--warn`, `--focus`.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Both tests come with the code. Copy `contrast.test.ts` and `tokens.test.ts` from the origin,
 changing the `vitest` import and, in `tokens.test.ts`, the two paths it reads: the stylesheet
@@ -45,7 +45,7 @@ const sourceRoot = fileURLToPath(new URL("../../site/src", import.meta.url));
 That crossing is the one thing in this task worth reviewing. The test lives with the engine
 because `bun test` runs there; the stylesheet lives with the site because Astro serves it.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/docs/contrast.test.ts src/docs/tokens.test.ts
@@ -55,13 +55,13 @@ bun test src/docs/contrast.test.ts src/docs/tokens.test.ts
 which is the more interesting failure: it proves the test is reading the file rather than a
 copy of the values.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy `contrast.ts`, `tokens.css` and `base.css` from the origin, unchanged. No token is
 renamed, no value is adjusted, and no ratio is relaxed to make a test pass — a failing
 contrast test means the value is wrong, not the threshold.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -70,4 +70,4 @@ bun run verify
 The page from task 1 is unstyled until task 4 imports these, and that is expected. What this
 task delivers is the measured palette, not its use.
 
-- [ ] **Commit**
+- [x] **Commit**

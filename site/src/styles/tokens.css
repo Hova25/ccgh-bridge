@@ -1,0 +1,77 @@
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface: #0b0f14;
+  --surface-side: #0e1319;
+  --surface-raised: #151c26;
+  --surface-hover: #1b2430;
+  --surface-current: #1d2b3d;
+  --border: #5f7089;
+  --rail: #2a3644;
+
+  --text: #e6edf3;
+  --text-muted: #a3b2c4;
+  --text-section: #c8d5e3;
+
+  --accent: #8ab4e0;
+  --warn: #ffb454;
+  --focus: #ffd166;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --surface: #ffffff;
+    --surface-side: #f2f5f9;
+    --surface-raised: #eaeff5;
+    --surface-hover: #e1e8f1;
+    --surface-current: #d6e4f7;
+    --border: #7d8b9c;
+    --rail: #c4cdd8;
+
+    --text: #0f1520;
+    --text-muted: #4f5d70;
+    --text-section: #24334a;
+
+    --accent: #2f5f8f;
+    --warn: #8a4b00;
+    --focus: #d17b00;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --surface: #ffffff;
+  --surface-side: #f2f5f9;
+  --surface-raised: #eaeff5;
+  --surface-hover: #e1e8f1;
+  --surface-current: #d6e4f7;
+  --border: #7d8b9c;
+  --rail: #c4cdd8;
+
+  --text: #0f1520;
+  --text-muted: #4f5d70;
+  --text-section: #24334a;
+
+  --accent: #2f5f8f;
+  --warn: #8a4b00;
+  --focus: #d17b00;
+}
+
+:root {
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --font-size: 14px;
+  --line-height: 1.55;
+
+  --space: 8px;
+  --radius: 8px;
+  --radius-row: 6px;
+
+  --row-height: 28px;
+  --sidebar-width: 272px;
+  --measure: 68ch;
+}
