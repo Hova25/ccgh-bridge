@@ -31,7 +31,7 @@ human to merge.
 - Consumes: `contentRoot` from `src/project`, and `ParsedEntry`.
 - Produces: `writeIssueNumbers`, `writePullRequest`, `writeMirror`, `markShipped`, `writeCompletion` from `mirror`; `commitToIterationBranch`, `shipBranchFor`, `shellIn`, `shell` from `iteration-branch`. Tasks 5 to 8 use them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Three tests come with the code, and the third runs real git in a temporary repository. Copy
 them with the two mechanical changes; the integration test needs only that `git` exists.
@@ -47,20 +47,20 @@ it("writes below whatever root it was given", async () => {
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/bridge
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy both from the origin, imports only.
 
 `iteration-branch.ts` imports `repositoryRoot` — the origin has its own; it takes this
 repository's, which is the same function the hooks and every command already use.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -69,4 +69,4 @@ bun run verify
 The integration test is the one to watch: it builds a repository, makes a branch, commits onto
 it from elsewhere, and asserts the commit landed where it was aimed.
 
-- [ ] **Commit**
+- [x] **Commit**
