@@ -1,0 +1,33 @@
+#!/usr/bin/env bun
+import { run as promote } from "../src/commands/promote";
+import { run as requireAHome } from "../src/commands/require-a-home";
+import { run as scaffold } from "../src/commands/scaffold";
+import { run as validate } from "../src/commands/validate";
+
+const commands: Record<string, (input: { argv: string[]; cwd: string }) => Promise<number>> = {
+  validate,
+  scaffold,
+  promote,
+  "require-a-home": requireAHome,
+};
+
+const usage = [
+  "usage:",
+  "  ccgh validate",
+  "  ccgh scaffold iteration <domain>/<slug>",
+  "  ccgh scaffold fix <domain>/<slug>",
+  "  ccgh scaffold task <domain>/<iteration> <slug>",
+  "  ccgh promote <domain>/<iteration> --to <status> [--dry-run]",
+  "  ccgh require-a-home <base> <changed...>",
+  "",
+].join("\n");
+
+const [name, ...argv] = process.argv.slice(2);
+const command = name ? commands[name] : undefined;
+
+if (!command) {
+  process.stderr.write(usage);
+  process.exit(1);
+}
+
+process.exit(await command({ argv, cwd: process.cwd() }));

@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "ccgh": "./bin/ccgh"
+  },
   "scripts": {
     "test": "bun test",
     "typecheck": "tsc --noEmit",
@@ -10,13 +13,13 @@
     "lint:fix": "biome check --write --error-on-warnings",
     "verify": "bun run lint && bun run typecheck && bun test"
   },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "zod": "^4.6.5"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@types/bun": "^1.4.2",
     "typescript": "^7.0.2"
-  },
-  "dependencies": {
-    "gray-matter": "^4.0.3",
-    "zod": "^4.6.5"
   }
 }
