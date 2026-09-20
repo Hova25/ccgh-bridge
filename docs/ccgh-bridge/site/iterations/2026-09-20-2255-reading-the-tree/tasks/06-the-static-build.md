@@ -33,7 +33,7 @@ author.
 - Consumes: `plan` and `run` from task 1, and the pages from task 5.
 - Produces: `type Configuration` gains `site?: string`; `plan` gains `site` and `base`. Task 7 uses neither — this is where the iteration's last external decision lands.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 ```ts
 it("refuses to build a site whose links would be dead", async () => {
@@ -68,13 +68,13 @@ The last one matters as much as the first: requiring the key to read the site lo
 make every repository configure something before it could read anything, and reading is the
 common case.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/commands/docs.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 `plan` computes `base` from the URL's path — `new URL(site).pathname`, normalised to end with
 a slash, or `/` when there is none. `run` catches the refusal and returns 1 with the message
@@ -82,10 +82,19 @@ on stderr, rather than letting it reach the user as a stack trace.
 
 `astro.config.ts` reads `CCGH_SITE` and `CCGH_BASE`, both absent when serving.
 
+**And then the base has to reach the links, which Astro does not do.** `base` prefixes the
+assets Astro emits and nothing else. Every page URL on this site is computed by `urlFor`, so
+it reads `CCGH_BASE` as well — one fact about the whole build, read where the URLs are made
+rather than threaded through every caller. The brand link in the shell and the fetch of the
+search index take it from `import.meta.env.BASE_URL`, which is the same value on the client.
+
+Without that, thirty links pointed at the domain root, the build was green, the local read was
+perfect, and every one of them would have been a 404 once published.
+
 The README gains `site` beside the keys it already documents, with the sentence that says why
 it is required for a build and not for a read.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -103,4 +112,4 @@ it shows up as a link that lands on a missing page rather than as an error.
 
 Confirm `.ccgh/` is ignored by git. A repository that commits its built site does it once.
 
-- [ ] **Commit**
+- [x] **Commit**

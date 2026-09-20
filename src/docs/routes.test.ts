@@ -82,4 +82,13 @@ describe("breadcrumbFor", () => {
       { label: "harness", href: "/harness" },
     ]);
   });
+
+  it("carries the base a published site is served under", () => {
+    process.env.CCGH_BASE = "/repo/";
+
+    expect(urlFor(fix)).toBe("/repo/harness/fixes/2026-09-14-mirror-the-milestone");
+    expect(breadcrumbFor(fix)[0]?.href).toBe("/repo/");
+
+    delete process.env.CCGH_BASE;
+  });
 });

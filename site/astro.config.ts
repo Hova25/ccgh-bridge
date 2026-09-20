@@ -5,4 +5,7 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   cacheDir: process.env.CCGH_CACHE_DIR,
   outDir: process.env.CCGH_OUT_DIR,
+  // Absent when serving: a local read needs neither, and requiring them would make every
+  // repository configure something before it could read anything.
+  ...(process.env.CCGH_SITE ? { site: process.env.CCGH_SITE, base: process.env.CCGH_BASE } : {}),
 });

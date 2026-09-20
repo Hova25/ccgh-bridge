@@ -3,17 +3,28 @@ import type { ContentLocation } from "../model/paths";
 
 const slugOf = (file: string): string => basename(file).replace(/\.md$/, "");
 
+// Astro's `base` reaches the assets it emits and nothing else: these paths are ours, so a
+// published site would serve every one of them from the domain root and find nothing. Read
+// here rather than threaded through every caller, because it is one fact about the whole
+// build, decided once by `ccgh docs`.
+const base = (): string => {
+  const configured = process.env.CCGH_BASE ?? "/";
+
+  return configured.endsWith("/") ? configured.slice(0, -1) : configured;
+};
+
 export const urlFor = (location: ContentLocation): string => {
   const { kind, domain, iteration, file } = location;
+  const at = base();
 
-  if (kind === "domain") return `/${domain}`;
-  if (kind === "guide") return `/${domain}/guide/${slugOf(file)}`;
-  if (kind === "decision") return `/${domain}/decisions/${slugOf(file)}`;
-  if (kind === "fix") return `/${domain}/fixes/${slugOf(file)}`;
-  if (kind === "iteration") return `/${domain}/${iteration}`;
-  if (kind === "brainstorm") return `/${domain}/${iteration}/brainstorm`;
+  if (kind === "domain") return `${at}/${domain}`;
+  if (kind === "guide") return `${at}/${domain}/guide/${slugOf(file)}`;
+  if (kind === "decision") return `${at}/${domain}/decisions/${slugOf(file)}`;
+  if (kind === "fix") return `${at}/${domain}/fixes/${slugOf(file)}`;
+  if (kind === "iteration") return `${at}/${domain}/${iteration}`;
+  if (kind === "brainstorm") return `${at}/${domain}/${iteration}/brainstorm`;
 
-  return `/${domain}/${iteration}/${slugOf(file)}`;
+  return `${at}/${domain}/${iteration}/${slugOf(file)}`;
 };
 
 // The root crumb is a place, not a project: naming the repository here would be a second
@@ -22,8 +33,8 @@ export const breadcrumbFor = (
   location: ContentLocation,
 ): Array<{ label: string; href: string }> => {
   const crumbs = [
-    { label: "Home", href: "/" },
-    { label: location.domain, href: `/${location.domain}` },
+    { label: "Home", href: `${base()}/` },
+    { label: location.domain, href: `${base()}/${location.domain}` },
   ];
 
   if (location.kind === "domain") return crumbs;
@@ -31,7 +42,7 @@ export const breadcrumbFor = (
   if (location.iteration) {
     crumbs.push({
       label: location.iteration,
-      href: `/${location.domain}/${location.iteration}`,
+      href: `${base()}/${location.domain}/${location.iteration}`,
     });
   }
 
