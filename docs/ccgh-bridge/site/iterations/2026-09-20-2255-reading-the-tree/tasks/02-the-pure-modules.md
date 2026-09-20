@@ -24,12 +24,12 @@ engine's own `ParsedEntry` so that everything downstream of it is testable witho
 
 - Create: `src/docs/routes.ts`, `tree.ts`, `board.ts`, `recent.ts`, `search-index.ts`, `leaf.ts`
 - Create: `site/src/entries.ts`, `site/src/leaf.ts`
+- Test: `src/docs/routes.test.ts`, `tree.test.ts`, `board.test.ts`, `recent.test.ts`, `search-index.test.ts`, `leaf.test.ts`
 
 `leaf` splits, because the origin had it on the wrong side of the line this task draws: two of
 its three exports call `entriesOf`, so they are not pure and cannot be tested here. `slugOf`
 stays in `src/docs/leaf.ts`; `pathsFor` and `leafOf` move to `site/src/leaf.ts`, beside the
 module they depend on.
-- Test: `src/docs/routes.test.ts`, `tree.test.ts`, `board.test.ts`, `recent.test.ts`, `search-index.test.ts`, `leaf.test.ts`
 
 **Interfaces**
 
