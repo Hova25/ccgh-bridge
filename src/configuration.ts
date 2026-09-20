@@ -7,6 +7,7 @@ export type Configuration = {
   title?: string;
   repository?: string;
   site?: string;
+  action?: string;
   check?: string[];
   language?: { refuse: string[] };
 };
