@@ -1,13 +1,5 @@
-# Dependencies
+.ccgh/
 node_modules/
-
-# Build output
-dist/
-.astro/
-
-# Editors
+site/.astro/
+.ccgh-build/
 .idea/
-.vscode/
-
-# Local environment
-.env

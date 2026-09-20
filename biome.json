@@ -1,7 +1,16 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
-    "includes": ["**", "!**/node_modules", "!**/dist", "!**/.astro", "!bun.lock"]
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/.astro",
+      "!bun.lock",
+      "!**/.ccgh",
+      "!site/.astro",
+      "!**/*.astro"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -16,7 +25,9 @@
       "style": {
         "useConsistentTypeDefinitions": {
           "level": "error",
-          "options": { "style": "type" }
+          "options": {
+            "style": "type"
+          }
         }
       }
     }
