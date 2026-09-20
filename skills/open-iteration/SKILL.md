@@ -76,11 +76,20 @@ a specification nobody argued with.
    git commit
    ```
 
-8. The documentation site is not built yet. When it is, `ccgh docs` starts it, and the
-   brainstorm, the specification and the tasks are read there rather than from file paths.
-   Until then, read them as files.
+8. Start the documentation site, so that the brainstorm, the specification and the tasks are
+   read on the site rather than from file paths:
 
-9. Report the reference, and close with the next action as a command on its own line:
+   ```bash
+   ccgh docs
+   ```
+
+   It keeps running after the command returns, and a second `ccgh docs` reports the port the
+   first one took rather than starting another. `astro dev stop` inside the plugin's `site/`
+   is what stops it.
+
+9. Report the reference and the iteration's URL,
+   `http://localhost:4321/<domain>/<yyyy-mm-dd-HHMM>-<slug>`, and close with the next action
+   as a command on its own line:
 
    ```
    /ccgh:validate-iteration <reference>

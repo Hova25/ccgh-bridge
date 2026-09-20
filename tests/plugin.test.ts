@@ -53,6 +53,14 @@ describe("every skill", () => {
     }
   });
 
+  it("promises nothing that does not exist", async () => {
+    for (const name of await skills()) {
+      const body = await readFile(join(root, "skills", name, "SKILL.md"), "utf8");
+
+      expect(body, name).not.toMatch(/does not exist yet|not built yet/i);
+    }
+  });
+
   it("names no command and no path from the repository this came from", async () => {
     for (const name of await skills()) {
       const body = await readFile(join(root, "skills", name, "SKILL.md"), "utf8");
