@@ -30,7 +30,7 @@ halfway, and it can always be asked what it would do instead.
 - Consumes: everything tasks 2 to 7 produced, plus `contentRoot` and `configuration`.
 - Produces: `run({ argv, cwd }): Promise<number>`, and `issueUrl({ repository, content, file })`. Task 9's workflows call it; task 10 runs it.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 ```ts
 describe("ccgh bridge", () => {
@@ -59,13 +59,13 @@ describe("ccgh bridge", () => {
 The dry run is asserted here rather than in the modules, because the modules cannot apply
 anything — this is the only place where the difference exists.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/commands/bridge.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy the body of the origin's `cli.ts` — `runPush`, `runFixes`, `runSync` and the `complete`,
 `relink` and `reconcile` branches — into `src/commands/bridge.ts`, changing four things:
@@ -82,7 +82,7 @@ The repository comes from `GITHUB_REPOSITORY` when a runner sets it, and from `r
 `--dry-run` prints the plan and returns before `applyActions`, `commitToIterationBranch` or any
 client call that writes.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -99,4 +99,4 @@ It should name one issue per task of every `active` iteration. There are none ye
 are `draft` or `ready`, so the honest output is that there is nothing to create. That is the
 correct answer and it proves the reading half without touching anything.
 
-- [ ] **Commit**
+- [x] **Commit**
