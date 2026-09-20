@@ -15,3 +15,15 @@ jobs:
       - uses: ./
         with:
           command: validate
+
+  # The other address. Same file, fetched by reference rather than taken from the checkout, so
+  # that the path a consumer uses is exercised too. Pinned to this branch on purpose: pinning
+  # it to a tag would make it untestable until a tag exists.
+  by-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: Hova25/ccgh-bridge@task/01-the-composite-action
+        with:
+          command: validate
