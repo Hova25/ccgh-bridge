@@ -18,6 +18,17 @@ describe("the composite action", () => {
     expect(body).toContain("--frozen-lockfile");
   });
 
+  it("carries the token itself, because GitHub does not put it in the environment", async () => {
+    const body = await action();
+
+    expect(body).toContain("github.token");
+    expect(body).toContain("GITHUB_TOKEN:");
+  });
+
+  it("commits as somebody, because git refuses a commit from nobody", async () => {
+    expect(await action()).toContain("user.email");
+  });
+
   it("takes a whole command, so that validating uses the same action as mirroring", async () => {
     const body = await action();
 

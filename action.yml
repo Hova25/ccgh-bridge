@@ -5,6 +5,13 @@ inputs:
   command:
     description: The whole ccgh command, such as "validate" or "bridge push".
     required: true
+  token:
+    description: >-
+      The token the bridge writes with. Defaults to the one the workflow already has, so that
+      a consumer's workflow never has to plumb it through — GitHub does not put it in the
+      environment on its own, and every verb refuses without it.
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
@@ -17,5 +24,15 @@ runs:
       shell: bash
       working-directory: ${{ github.action_path }}
 
+    # Whoever the bridge commits as. It writes issue numbers back onto iteration branches, and
+    # git refuses a commit from nobody.
+    - run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      shell: bash
+
     - run: ${{ github.action_path }}/bin/ccgh ${{ inputs.command }}
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        GH_TOKEN: ${{ inputs.token }}
