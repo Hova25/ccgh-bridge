@@ -28,7 +28,7 @@ it. This is the fourth time that constant has been hunted down, and the last.
 - Consumes: `ParsedEntry` from `src/model/validate`, and `contentRoot` from `src/project`.
 - Produces: `createGitHubClient({ token, owner, repo }): GitHubClient` with `readState`, `createIssue`, `updateIssue`, `comment`, `addLabel`, `ensureLabel`, `pullRequestForBranch`, `listBodies` and `updateBody`; `renderIssue({ entry, url }): RenderedIssue`; and `fileFromMarker(body): string | null`. Tasks 3 to 7 use all of them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Both tests come with the code. Copy `github.test.ts` and `render.test.ts` from the origin's
 bridge, changing the `vitest` import and the paths, which now point at `../model/`.
@@ -48,13 +48,13 @@ it("links back to the file through whatever content root the repository has", ()
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/bridge
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy `github.ts` and `render.ts` from the origin, with the import paths as the only change.
 Neither reads a file system and neither knows where content lives; the URL reaches `render` as
@@ -62,7 +62,7 @@ a function, and the function is built where the content root is known.
 
 `github.ts` keeps `@octokit/rest`, which becomes a dependency of this repository.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -70,4 +70,4 @@ bun run verify
 
 Then diff both against the origin and confirm the only differences are imports.
 
-- [ ] **Commit**
+- [x] **Commit**

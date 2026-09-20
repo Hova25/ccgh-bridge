@@ -25,10 +25,14 @@ describe("the composite action", () => {
     expect(body).not.toMatch(/bridge \$\{\{ inputs\.command/);
   });
 
-  it("is exercised by this repository through a path rather than a tag", async () => {
+  it("is exercised by this repository through a path, and never pinned to a tag", async () => {
     const workflow = await readFile(join(root, ".github/workflows/ccgh-action.yml"), "utf8");
 
     expect(workflow).toContain("uses: ./");
-    expect(workflow).not.toMatch(/uses:\s*[\w-]+\/ccgh-bridge@/);
+
+    // A second job fetches the action by reference, because both addresses are the same file
+    // and only the path is exercised otherwise. What it must never be is a tag: a tag cannot
+    // test the commit that changes the action.
+    expect(workflow).not.toMatch(/uses:\s*[\w-]+\/ccgh-bridge@v/);
   });
 });
