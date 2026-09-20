@@ -23,15 +23,20 @@ engine's own `ParsedEntry` so that everything downstream of it is testable witho
 **Files**
 
 - Create: `src/docs/routes.ts`, `tree.ts`, `board.ts`, `recent.ts`, `search-index.ts`, `leaf.ts`
-- Create: `site/src/entries.ts`
+- Create: `site/src/entries.ts`, `site/src/leaf.ts`
 - Test: `src/docs/routes.test.ts`, `tree.test.ts`, `board.test.ts`, `recent.test.ts`, `search-index.test.ts`, `leaf.test.ts`
+
+`leaf` splits, because the origin had it on the wrong side of the line this task draws: two of
+its three exports call `entriesOf`, so they are not pure and cannot be tested here. `slugOf`
+stays in `src/docs/leaf.ts`; `pathsFor` and `leafOf` move to `site/src/leaf.ts`, beside the
+module they depend on.
 
 **Interfaces**
 
 - Consumes: `ContentLocation` and `locate` from `src/model/paths`, `ParsedEntry` from `src/model/validate`, and the collections task 1 declared.
 - Produces: `urlFor(location): string` and `breadcrumbFor(location)` from `routes`; `treeOf({ entries })` and `type TreeNode` from `tree`; `boardOf({ entries })`, `type Board` and `type BoardEntry` from `board`; `recentIssues({ … })` and `type RecentIssue` from `recent`; `searchIndexOf({ entries })`, `matches({ … })` and `type SearchRecord` from `search-index`; `pathsFor({ … })`, `leafOf({ file })` and `slugOf(location)` from `leaf`; and `entriesOf(): Promise<ParsedEntry[]>` from `site/src/entries.ts`. Tasks 4 and 5 consume all of them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Five tests come with the code. Copy `routes.test.ts`, `tree.test.ts`, `board.test.ts`,
 `recent.test.ts` and `search-index.test.ts` from the origin's site modules into `src/docs/`,
@@ -60,7 +65,7 @@ describe("slugOf", () => {
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/docs
@@ -68,7 +73,7 @@ bun test src/docs
 
 Six files fail on a module that is not there.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy the six modules from the origin, with the import paths as the only change. Not one line
 of logic is touched: a behaviour change hidden inside a move of nine hundred lines is the
@@ -77,7 +82,7 @@ acceptance criterion.
 
 `site/src/entries.ts` is the origin's, with `../content-model/` becoming `../../src/model/`.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -86,4 +91,4 @@ bun run verify
 Then diff each moved file against its origin and confirm the only differences are import
 lines. Verify by diff rather than by trust.
 
-- [ ] **Commit**
+- [x] **Commit**
