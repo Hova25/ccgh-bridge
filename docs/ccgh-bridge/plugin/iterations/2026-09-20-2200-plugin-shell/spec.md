@@ -1,8 +1,10 @@
 ---
 title: Plugin shell
-status: draft
+status: ready
 depends_on: []
 impacts: []
+validated_by: hovannes
+validated_at: '2026-09-20T22:09:23.369Z'
 ---
 
 # Plugin shell
