@@ -62,3 +62,35 @@ describe("every skill", () => {
     }
   });
 });
+
+describe("the hook wiring", () => {
+  const registrations = async (): Promise<Array<{ type: string; command: string }>> => {
+    const parsed = JSON.parse(await readFile(join(root, "hooks/hooks.json"), "utf8"));
+
+    return Object.values(parsed.hooks as Record<string, Array<{ hooks: never[] }>>)
+      .flat()
+      .flatMap((matcher) => matcher.hooks);
+  };
+
+  it("registers every rule that exists, because a rule nobody runs looks like a rule that passes", async () => {
+    const written = (await readdir(join(root, "hooks/rules")))
+      .filter((name) => name.endsWith(".ts") && !name.endsWith(".test.ts"))
+      .map((name) => name.replace(/\.ts$/, ""))
+      .sort();
+    const registered = [
+      ...new Set((await registrations()).map((hook) => hook.command.split(" ").pop() as string)),
+    ].sort();
+
+    expect(registered).toEqual(written);
+  });
+
+  it("names a command that resolves to a file", async () => {
+    for (const hook of await registrations()) {
+      const [, entry, rule] = hook.command.split(" ");
+
+      expect(hook.type).toBe("command");
+      expect(entry).toContain("hooks/run.ts");
+      expect(await Bun.file(join(root, "hooks/rules", `${rule}.ts`)).exists(), rule).toBe(true);
+    }
+  });
+});
