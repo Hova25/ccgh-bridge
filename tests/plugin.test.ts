@@ -140,4 +140,22 @@ describe("the site", () => {
       expect(await readFile(file, "utf8"), file).not.toMatch(/nauvia/i);
     }
   });
+
+  it("has a page for every kind the validator accepts", async () => {
+    const pages = (await sourceFiles(join(root, "site", "src", "pages")))
+      .map((file) => file.slice(join(root, "site", "src", "pages").length + 1))
+      .sort();
+
+    expect(pages).toEqual([
+      "[domain]/[iteration]/[task].astro",
+      "[domain]/[iteration]/brainstorm.astro",
+      "[domain]/[iteration]/index.astro",
+      "[domain]/decisions/[record].astro",
+      "[domain]/fixes/[fix].astro",
+      "[domain]/guide/[page].astro",
+      "[domain]/index.astro",
+      "index.astro",
+      "search-index.json.ts",
+    ]);
+  });
 });

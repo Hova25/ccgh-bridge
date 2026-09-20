@@ -34,7 +34,7 @@ URL, and the temporary page from task 1 is gone.
 - Consumes: everything tasks 2, 3 and 4 produced — `entriesOf`, the six pure modules, the tokens and the seven components.
 - Produces: the eight routes, and `/search-index.json`. Task 6 builds them; task 7 reads them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 The routes are already tested as a function; what is not tested is that the function and the
 directory agree. Add to `src/docs/routes.test.ts`:
@@ -64,24 +64,34 @@ it("gives every kind the validator accepts a URL", () => {
 A kind with no route renders nothing and reports nothing, which is the failure worth a test:
 the page is simply absent, and the tree links to a URL that is not built.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/docs/routes.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
-Copy the eight pages from the origin, with the import paths as the only change. The home page
-keeps its board and its recent issues; the domain page keeps the ordering it already has; the
-leaf pages keep `pathsFor` and `leafOf`.
+Copy the eight pages from the origin. The home page keeps its board and its recent issues; the
+domain page keeps the ordering it already has; the leaf pages keep `pathsFor` and `leafOf`.
+
+Two changes beyond the imports, both found by building:
+
+`site/src/leaf.ts` re-exports `slugOf` from `src/docs/leaf`, so that a page imports everything
+a leaf needs from one module rather than reaching across the boundary for one function.
+
+Three pages — the home page, the fix page and the task page — carry the origin's own GitHub
+repository in a constant, to build the issue and pull request links. It comes from
+`repository` in `ccgh.json` now, through `CCGH_REPOSITORY`. With no key, the number is printed
+without a link and the home page leaves out its list of recent issues, because
+`https://github.com//issues/3` is worse than no link at all.
 
 `search-index.json.ts` is eight lines and stays eight lines.
 
 Delete the probe page from task 1 by replacing it: the real `index.astro` overwrites it, and
 nothing else references it.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -99,4 +109,4 @@ a task, a decision, a fix, a guide. Follow the tree and the breadcrumbs rather t
 URLs — a broken link is what this catches, and typing the URL hides it. Search for a word that
 appears in one decision and confirm the palette finds it.
 
-- [ ] **Commit**
+- [x] **Commit**

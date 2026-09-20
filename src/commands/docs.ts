@@ -12,6 +12,9 @@ export type Plan = {
   buildDir: string;
   outDir: string;
   name: string;
+  // <owner>/<repository>, so that an issue number can become a link. Empty when the
+  // repository has not said where its issues live, and the site then prints the number.
+  repository: string;
   port?: string;
 };
 
@@ -37,12 +40,25 @@ export const plan = ({ argv, cwd }: { argv: string[]; cwd: string }): Plan => {
     buildDir: join(plugin, ".ccgh-build", Bun.hash(repository).toString(36)),
     outDir: join(repository, ".ccgh", "site"),
     name: configuration({ from: cwd }).title ?? basename(repository),
+    repository: configuration({ from: cwd }).repository ?? "",
     ...(port ? { port } : {}),
   };
 };
 
 export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promise<number> => {
-  const { mode, content, cacheDir, buildDir, outDir, name, port } = plan({ argv, cwd });
+  const {
+    mode,
+    content,
+    cacheDir,
+    buildDir,
+    outDir,
+    name,
+    repository: origin,
+    port,
+  } = plan({
+    argv,
+    cwd,
+  });
 
   if (!existsSync(content)) {
     process.stderr.write(`no content directory at ${content}\n`);
@@ -78,6 +94,7 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
         CCGH_CACHE_DIR: cacheDir,
         CCGH_OUT_DIR: buildDir,
         CCGH_SITE_NAME: name,
+        CCGH_REPOSITORY: origin,
       },
       stdio: ["inherit", "inherit", "inherit"],
     },

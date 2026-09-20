@@ -1,0 +1,67 @@
+---
+import { getEntry, render } from "astro:content";
+import Prose from "../../../components/Prose.astro";
+import { leafOf, pathsFor, slugOf } from "../../../leaf";
+import { breadcrumbFor } from "../../../../../src/docs/routes";
+import { treeOf } from "../../../../../src/docs/tree";
+
+export const getStaticPaths = () =>
+  pathsFor({
+    kind: "task",
+    params: (location) => ({
+      domain: location.domain,
+      iteration: location.iteration as string,
+      task: slugOf(location),
+    }),
+  });
+
+const { file } = Astro.props;
+const { entries, entry, currentUrl } = await leafOf({ file });
+const tree = treeOf({ entries, currentUrl });
+
+const { Content } = await render((await getEntry("tasks", file.replace(/\.md$/, "")))!);
+
+const github = (entry.data.github ?? {}) as {
+  state?: string | null;
+  merged_at?: string | null;
+  pr?: number | null;
+};
+const issue = (entry.data.issue as number | null) ?? null;
+const repository = process.env.CCGH_REPOSITORY ?? "";
+
+const meta = [
+  `task ${entry.data.order}`,
+  issue === null ? "pending" : github.merged_at ? "done" : (github.state ?? "open"),
+]
+  .filter(Boolean)
+  .join(" · ");
+---
+
+<Prose title={entry.data.title as string} meta={meta} crumbs={breadcrumbFor(entry.location)} tree={tree}>
+  {
+    issue !== null && repository !== "" && (
+      <p class="link">
+        <a href={`https://github.com/${repository}/issues/${issue}`}>issue #{issue}</a>
+        {github.pr && (
+          <>
+            {" · "}
+            <a href={`https://github.com/${repository}/pull/${github.pr}`}>
+              pull request #{github.pr}
+            </a>
+          </>
+        )}
+      </p>
+    )
+  }
+  <Content />
+</Prose>
+
+<style>
+  .link {
+    margin: 0 0 calc(var(--space) * 3);
+  }
+
+  .link a {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,51 @@
+---
+import { getEntry, render } from "astro:content";
+import Prose from "../../../components/Prose.astro";
+import { leafOf, pathsFor, slugOf } from "../../../leaf";
+import { breadcrumbFor } from "../../../../../src/docs/routes";
+import { treeOf } from "../../../../../src/docs/tree";
+
+export const getStaticPaths = () =>
+  pathsFor({
+    kind: "fix",
+    params: (location) => ({ domain: location.domain, fix: slugOf(location) }),
+  });
+
+const { file } = Astro.props;
+const { entries, entry, currentUrl } = await leafOf({ file });
+const tree = treeOf({ entries, currentUrl });
+
+const { Content } = await render((await getEntry("fixes", file.replace(/\.md$/, "")))!);
+
+const date =
+  entry.data.date instanceof Date
+    ? entry.data.date.toISOString().slice(0, 10)
+    : String(entry.data.date ?? "");
+const issue = entry.data.issue as number | null;
+const pr = entry.data.pr as number | null;
+const repository = process.env.CCGH_REPOSITORY ?? "";
+---
+
+<Prose title={entry.data.title as string} meta={date} crumbs={breadcrumbFor(entry.location)} tree={tree}>
+  {
+    issue !== null && repository !== "" && (
+      <p class="link">
+        <a href={`https://github.com/${repository}/issues/${issue}`}>issue #{issue}</a>
+        {pr && (
+          <>
+            {" · "}
+            <a href={`https://github.com/${repository}/pull/${pr}`}>pull request #{pr}</a>
+          </>
+        )}
+      </p>
+    )
+  }
+  <Content />
+</Prose>
+
+<style>
+  .link {
+    margin: 0 0 calc(var(--space) * 3);
+    color: var(--accent);
+  }
+</style>
