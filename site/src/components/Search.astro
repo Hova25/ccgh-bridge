@@ -1,0 +1,268 @@
+---
+---
+
+<button id="search-open" type="button" aria-keyshortcuts="Meta+K Control+K">
+  <span>Search</span>
+  <kbd>⌘K</kbd>
+</button>
+
+<dialog id="search" aria-label="Search pages">
+  <label class="visually-hidden" for="search-input">Search titles and paths</label>
+  <input
+    id="search-input"
+    type="search"
+    role="combobox"
+    aria-expanded="false"
+    aria-controls="search-results"
+    aria-autocomplete="list"
+    autocomplete="off"
+    placeholder="title or path"
+  />
+  <ul id="search-results" role="listbox" aria-label="Results"></ul>
+  <p id="search-status" class="visually-hidden" role="status" aria-live="polite"></p>
+  <p id="search-empty" hidden>
+    No match. Search covers titles and paths, not the text inside a page.
+  </p>
+</dialog>
+
+<script>
+  type SearchRecord = { title: string; path: string; url: string };
+
+  const dialog = document.getElementById("search") as HTMLDialogElement;
+  const input = document.getElementById("search-input") as HTMLInputElement;
+  const list = document.getElementById("search-results") as HTMLUListElement;
+  const status = document.getElementById("search-status") as HTMLParagraphElement;
+  const empty = document.getElementById("search-empty") as HTMLParagraphElement;
+
+  let records: SearchRecord[] = [];
+  let active = 0;
+
+  const matches = ({ records, query }: { records: SearchRecord[]; query: string }) => {
+    const needle = query.trim().toLowerCase();
+
+    if (needle.length === 0) return [];
+
+    return records
+      .map((record) => {
+        const inTitle = record.title.toLowerCase().includes(needle);
+        const inPath = record.path.toLowerCase().includes(needle);
+
+        return { record, score: inTitle ? 2 : inPath ? 1 : 0 };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((item) => item.record);
+  };
+
+  const option = ({ record, index }: { record: SearchRecord; index: number }): HTMLLIElement => {
+    const item = document.createElement("li");
+
+    item.id = `search-result-${index}`;
+    item.setAttribute("role", "option");
+    item.setAttribute("aria-selected", String(index === 0));
+    item.dataset.url = record.url;
+
+    const title = document.createElement("span");
+    title.className = "title";
+    title.textContent = record.title;
+
+    const path = document.createElement("span");
+    path.className = "path";
+    path.textContent = record.path;
+
+    item.append(title, path);
+
+    return item;
+  };
+
+  const render = () => {
+    const found = matches({ records, query: input.value }).slice(0, 12);
+    const query = input.value.trim();
+
+    active = 0;
+    list.replaceChildren(...found.map((record, index) => option({ record, index })));
+
+    input.setAttribute("aria-expanded", String(found.length > 0));
+    input.setAttribute("aria-activedescendant", found.length > 0 ? "search-result-0" : "");
+    empty.hidden = found.length > 0 || query.length === 0;
+    status.textContent =
+      query.length === 0 ? "" : `${found.length} ${found.length === 1 ? "result" : "results"}`;
+  };
+
+  const open = async () => {
+    if (records.length === 0) {
+      records = await fetch("/search-index.json").then((response) => response.json());
+    }
+
+    input.value = "";
+    list.replaceChildren();
+    input.setAttribute("aria-expanded", "false");
+    input.setAttribute("aria-activedescendant", "");
+    status.textContent = "";
+    empty.hidden = true;
+    dialog.showModal();
+    input.focus();
+  };
+
+  const go = () => {
+    const item = list.children[active] as HTMLLIElement | undefined;
+    if (item) window.location.href = item.dataset.url as string;
+  };
+
+  const move = (step: number) => {
+    const items = [...list.children] as HTMLLIElement[];
+    if (items.length === 0) return;
+
+    items[active]?.setAttribute("aria-selected", "false");
+    active = (active + step + items.length) % items.length;
+
+    const selected = items[active];
+
+    selected?.setAttribute("aria-selected", "true");
+    selected?.scrollIntoView({ block: "nearest" });
+    input.setAttribute("aria-activedescendant", selected?.id ?? "");
+  };
+
+  document.getElementById("search-open")?.addEventListener("click", () => void open());
+  input.addEventListener("input", render);
+
+  document.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      void open();
+    }
+  });
+
+  dialog.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      move(1);
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      move(-1);
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      go();
+    }
+  });
+
+  list.addEventListener("click", (event) => {
+    const item = (event.target as HTMLElement).closest("li") as HTMLLIElement | null;
+    if (item) window.location.href = item.dataset.url as string;
+  });
+</script>
+
+<style>
+  #search-open {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space);
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font: inherit;
+    min-height: var(--row-height);
+    padding: 4px calc(var(--space) * 1.25);
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    margin-bottom: calc(var(--space) * 1.5);
+  }
+
+  #search-open:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+
+  kbd {
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 12px;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  dialog {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font: inherit;
+    padding: 0;
+    width: min(560px, 90vw);
+    margin-top: 12vh;
+  }
+
+  dialog::backdrop {
+    background: var(--surface);
+    opacity: 0.7;
+  }
+
+  input {
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font: inherit;
+    padding: calc(var(--space) * 1.5);
+    width: 100%;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: var(--space);
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  ul :global(li) {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space);
+    min-height: var(--row-height);
+    align-items: center;
+    padding: 4px calc(var(--space) * 1.25);
+    border-radius: var(--radius-row);
+    cursor: pointer;
+  }
+
+  ul :global(li[aria-selected="true"]) {
+    background: var(--surface-current);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  ul :global(.title) {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  ul :global(.path) {
+    color: var(--text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  p {
+    color: var(--text-muted);
+    padding: calc(var(--space) * 1.5);
+    margin: 0;
+  }
+</style>

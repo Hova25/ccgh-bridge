@@ -1,0 +1,269 @@
+---
+import "../styles/base.css";
+import type { TreeNode } from "../../../src/docs/tree";
+import Search from "./Search.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+
+type Props = {
+  title: string;
+  crumbs: Array<{ label: string; href: string }>;
+  tree: TreeNode[];
+};
+
+const { title, crumbs } = Astro.props;
+
+// The repository being read decides what this site is called; `ccgh docs` resolves it.
+const name = process.env.CCGH_SITE_NAME ?? "docs";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · {name}</title>
+    <script is:inline>
+      try {
+        const stored = localStorage.getItem("ccgh-theme");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch {
+        // A locked-down browser refuses storage; the system preference decides then.
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to content</a>
+    <div class="shell">
+      <nav class="sidebar" id="tree-panel" aria-label="Sections">
+        <a class="brand" href="/">{name}</a>
+        <Search />
+        <ThemeToggle />
+        <slot name="tree" />
+      </nav>
+      <main id="content" tabindex="-1">
+        <button id="tree-open" type="button" aria-expanded="false" aria-controls="tree-panel">
+          Sections
+        </button>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol>
+            {
+              crumbs.map((crumb, index) => (
+                <li>
+                  {index > 0 && (
+                    <span class="sep" aria-hidden="true">
+                      /
+                    </span>
+                  )}
+                  {index === crumbs.length - 1 ? (
+                    <span aria-current="page">{crumb.label}</span>
+                  ) : (
+                    <a href={crumb.href}>{crumb.label}</a>
+                  )}
+                </li>
+              ))
+            }
+          </ol>
+        </nav>
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<script>
+  const button = document.getElementById("tree-open") as HTMLButtonElement;
+  const panel = document.getElementById("tree-panel") as HTMLElement;
+  const narrow = window.matchMedia("(max-width: 720px)");
+
+  const focusable = (): HTMLElement[] =>
+    [...panel.querySelectorAll<HTMLElement>("a[href], button, summary, input")].filter(
+      (element) => element.offsetParent !== null,
+    );
+
+  const close = ({ restore }: { restore: boolean }) => {
+    panel.dataset.open = "false";
+    button.setAttribute("aria-expanded", "false");
+    if (restore) button.focus();
+  };
+
+  const open = () => {
+    panel.dataset.open = "true";
+    button.setAttribute("aria-expanded", "true");
+    focusable()[0]?.focus();
+  };
+
+  button.addEventListener("click", () => {
+    if (panel.dataset.open === "true") close({ restore: true });
+    else open();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (panel.dataset.open !== "true") return;
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      close({ restore: true });
+      return;
+    }
+
+    if (event.key !== "Tab") return;
+
+    const stops = focusable();
+    if (stops.length === 0) return;
+
+    const first = stops[0] as HTMLElement;
+    const last = stops[stops.length - 1] as HTMLElement;
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  narrow.addEventListener("change", (event) => {
+    if (!event.matches) close({ restore: false });
+  });
+</script>
+
+<style>
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: var(--sidebar-width);
+    flex: 0 0 var(--sidebar-width);
+    background: var(--surface-side);
+    border-right: 1px solid var(--border);
+    padding: calc(var(--space) * 2);
+    overflow-y: auto;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+
+  .brand {
+    display: block;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    margin: 0 var(--space) calc(var(--space) * 1.5);
+  }
+
+  .brand:hover {
+    color: var(--accent);
+  }
+
+  main {
+    flex: 1;
+    padding: calc(var(--space) * 2) calc(var(--space) * 4);
+    min-width: 0;
+  }
+
+  .skip {
+    position: absolute;
+    left: var(--space);
+    top: calc(var(--space) * -6);
+    z-index: 2;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space) calc(var(--space) * 2);
+    transition: top 0.1s;
+  }
+
+  .skip:focus {
+    top: var(--space);
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  .crumbs {
+    color: var(--text-muted);
+    margin-bottom: calc(var(--space) * 3);
+  }
+
+  .crumbs ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+  }
+
+  .crumbs a {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .sep {
+    margin: 0 6px;
+    color: var(--text-muted);
+  }
+
+  #tree-open {
+    display: none;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font: inherit;
+    min-height: var(--row-height);
+    padding: 4px calc(var(--space) * 1.5);
+    margin-bottom: calc(var(--space) * 2);
+    cursor: pointer;
+  }
+
+  @media (max-width: 720px) {
+    .shell {
+      display: block;
+    }
+
+    #tree-open {
+      display: block;
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 3;
+      width: min(var(--sidebar-width), 85vw);
+      max-height: none;
+      transform: translateX(-100%);
+      transition: transform 0.15s;
+    }
+
+    .sidebar[data-open="true"] {
+      transform: translateX(0);
+    }
+
+    main {
+      padding: calc(var(--space) * 2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skip,
+    .sidebar {
+      transition: none;
+    }
+  }
+</style>

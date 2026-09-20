@@ -1,0 +1,64 @@
+---
+import type { BoardEntry } from "../../../src/docs/board";
+
+type Props = { label: string; entries: BoardEntry[]; showProgress?: boolean };
+
+const { label, entries, showProgress = false } = Astro.props;
+
+const detailOf = (entry: BoardEntry): string => {
+  if (entry.blockedBy.length > 0) return `waits on ${entry.blockedBy.join(", ")}`;
+  if (showProgress) return `${entry.doneCount}/${entry.taskCount}`;
+
+  return `${entry.taskCount} task${entry.taskCount === 1 ? "" : "s"}`;
+};
+---
+
+{
+  entries.length > 0 && (
+    <section>
+      <h2>{label}</h2>
+      <ul>
+        {entries.map((entry) => (
+          <li>
+            <a href={entry.href}>{entry.reference}</a>
+            <span class="detail">{detailOf(entry)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  section {
+    margin-bottom: calc(var(--space) * 4);
+  }
+
+  h2 {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-section);
+    font-weight: 500;
+    margin: 0 0 var(--space);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: calc(var(--space) * 2);
+    padding: 2px 0;
+    max-width: var(--measure);
+  }
+
+  .detail {
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+</style>

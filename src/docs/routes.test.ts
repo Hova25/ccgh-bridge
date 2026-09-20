@@ -25,7 +25,7 @@ describe("urlFor", () => {
 
   it("breadcrumbs a fix through its domain", () => {
     expect(breadcrumbFor(fix).map((crumb) => crumb.label)).toEqual([
-      "nauvia",
+      "Home",
       "harness",
       "2026-09-14-mirror-the-milestone",
     ]);
@@ -66,7 +66,7 @@ describe("breadcrumbFor", () => {
     expect(
       breadcrumbFor(at("harness/iterations/2026-09-13-1529-bootstrap/tasks/01-content-schemas.md")),
     ).toEqual([
-      { label: "nauvia", href: "/" },
+      { label: "Home", href: "/" },
       { label: "harness", href: "/harness" },
       { label: "2026-09-13-1529-bootstrap", href: "/harness/2026-09-13-1529-bootstrap" },
       {
@@ -78,7 +78,7 @@ describe("breadcrumbFor", () => {
 
   it("stops at the domain for a domain page", () => {
     expect(breadcrumbFor(at("harness/index.md"))).toEqual([
-      { label: "nauvia", href: "/" },
+      { label: "Home", href: "/" },
       { label: "harness", href: "/harness" },
     ]);
   });

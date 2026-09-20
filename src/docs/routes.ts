@@ -16,11 +16,13 @@ export const urlFor = (location: ContentLocation): string => {
   return `/${domain}/${iteration}/${slugOf(file)}`;
 };
 
+// The root crumb is a place, not a project: naming the repository here would be a second
+// copy of what the shell already shows, and the origin's copy said the wrong thing.
 export const breadcrumbFor = (
   location: ContentLocation,
 ): Array<{ label: string; href: string }> => {
   const crumbs = [
-    { label: "nauvia", href: "/" },
+    { label: "Home", href: "/" },
     { label: location.domain, href: `/${location.domain}` },
   ];
 

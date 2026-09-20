@@ -1,26 +1,27 @@
 ---
-import { getCollection } from "astro:content";
+// A temporary page: task 5 replaces it with the real home page. It exists to prove the shell,
+// the tree and the theme compile and render against a repository's own content.
+import Shell from "../components/Shell.astro";
+import Tree from "../components/Tree.astro";
+import { treeOf } from "../../../src/docs/tree";
+import { entriesOf } from "../entries";
 
-const domains = (await getCollection("domains")).sort((first, second) =>
-  first.id.localeCompare(second.id),
-);
+const entries = await entriesOf();
+const tree = treeOf({ entries, currentUrl: "/" });
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Domains</title>
-  </head>
-  <body>
-    <h1>Domains</h1>
-    <ul>
-      {
-        domains.map((domain) => (
+<Shell title="Domains" crumbs={[{ label: "Home", href: "/" }]} tree={tree}>
+  <Tree slot="tree" nodes={tree} />
+  <h1>Domains</h1>
+  <ul>
+    {
+      entries
+        .filter((entry) => entry.location.kind === "domain")
+        .map((entry) => (
           <li>
-            <strong>{domain.data.title}</strong> — {domain.data.summary}
+            <strong>{String(entry.data.title)}</strong> — {String(entry.data.summary)}
           </li>
         ))
-      }
-    </ul>
-  </body>
-</html>
+    }
+  </ul>
+</Shell>

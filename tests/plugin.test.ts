@@ -118,3 +118,26 @@ describe("the marketplace entry", () => {
     ]);
   });
 });
+
+describe("the site", () => {
+  const sourceFiles = async (directory: string): Promise<string[]> => {
+    const found: string[] = [];
+
+    for (const item of await readdir(directory, { withFileTypes: true })) {
+      const full = join(directory, item.name);
+
+      if (item.isDirectory()) found.push(...(await sourceFiles(full)));
+      else found.push(full);
+    }
+
+    return found;
+  };
+
+  it("carries no name from the repository this came from", async () => {
+    const directories = [join(root, "site", "src"), join(root, "src", "docs")];
+
+    for (const file of (await Promise.all(directories.map(sourceFiles))).flat()) {
+      expect(await readFile(file, "utf8"), file).not.toMatch(/nauvia/i);
+    }
+  });
+});
