@@ -28,7 +28,7 @@ can be tested without a network: a plan is a value.
 - Consumes: `renderIssue` and `fileFromMarker` from task 2, `GitHubClient` from task 2, and `ParsedEntry`.
 - Produces: `planActions({ entries, remote, url }): Action[]`, `missingIssueNumbers({ entries, remote })`, `applyActions({ actions, client }): ApplyResult`, `formatDivergence(...)`, and the types `RemoteIssue`, `RemoteState`, `Action`. Tasks 4, 7 and 8 use them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Both tests come with the code, and they are the largest pair in the bridge. Copy
 `plan.test.ts` and `apply.test.ts` with the two mechanical changes.
@@ -55,22 +55,22 @@ it("reports a divergence rather than deciding which side is right", () => {
 
 Guessing which of two numbers is right is how a mirror corrupts both sides.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/bridge
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy `plan.ts` and `apply.ts` from the origin, imports only. No logic moves: the planner is the
 piece with the most edge cases in the whole bridge and the tests arriving green is the
 acceptance criterion.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
