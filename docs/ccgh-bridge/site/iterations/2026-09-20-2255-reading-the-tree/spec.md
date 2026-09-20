@@ -143,10 +143,16 @@ which is the failure this refusal exists to prevent.
 
 `base` is derived from that URL's path, so one key answers both questions.
 
-### The title
+### The title, and where the issues live
 
 The site is named after the repository directory, and `ccgh.json` may override it with
 `title`. Nothing in the source names a project.
+
+Three pages turn an issue number into a link to GitHub, and the origin wrote its own
+repository into each of them. `repository` in `ccgh.json` — `<owner>/<name>` — is where that
+comes from, explicit rather than derived for the same reason `site` is. With no key, the pages
+print the number and the home page leaves out its list of recent issues: a number is a fact,
+and a link to `https://github.com//issues/3` is not.
 
 ## Failure modes
 

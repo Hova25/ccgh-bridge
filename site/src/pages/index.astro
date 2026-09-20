@@ -1,27 +1,110 @@
 ---
-// A temporary page: task 5 replaces it with the real home page. It exists to prove the shell,
-// the tree and the theme compile and render against a repository's own content.
+import BoardGroup from "../components/BoardGroup.astro";
 import Shell from "../components/Shell.astro";
 import Tree from "../components/Tree.astro";
-import { treeOf } from "../../../src/docs/tree";
+import { boardOf } from "../../../src/docs/board";
 import { entriesOf } from "../entries";
+import { recentIssues } from "../../../src/docs/recent";
+import { treeOf } from "../../../src/docs/tree";
+
+const repository = process.env.CCGH_REPOSITORY ?? "";
 
 const entries = await entriesOf();
 const tree = treeOf({ entries, currentUrl: "/" });
+const board = boardOf({ entries });
+const recent = recentIssues({ entries });
+
+const nothing =
+  board.inFlight.length + board.launchable.length + board.blocked.length + board.shipped.length ===
+  0;
 ---
 
-<Shell title="Domains" crumbs={[{ label: "Home", href: "/" }]} tree={tree}>
+<Shell title="Home" crumbs={[{ label: "Home", href: "/" }]} tree={tree}>
   <Tree slot="tree" nodes={tree} />
-  <h1>Domains</h1>
-  <ul>
-    {
-      entries
-        .filter((entry) => entry.location.kind === "domain")
-        .map((entry) => (
-          <li>
-            <strong>{String(entry.data.title)}</strong> — {String(entry.data.summary)}
-          </li>
-        ))
-    }
-  </ul>
+
+  <h1>Where the work is</h1>
+
+  <BoardGroup label="In flight" entries={board.inFlight} showProgress />
+  <BoardGroup label="Launchable now" entries={board.launchable} />
+  <BoardGroup label="Blocked" entries={board.blocked} />
+  <BoardGroup label="Shipped" entries={board.shipped} showProgress />
+
+  {nothing && <p class="empty">No iteration has been validated yet.</p>}
+
+  {
+    recent.length > 0 && repository !== "" && (
+      <section>
+        <h2>Latest issues</h2>
+        <ul>
+          {recent.map((item) => (
+            <li>
+              <a class="number" href={`https://github.com/${repository}/issues/${item.issue}`}>
+                #{item.issue}
+              </a>
+              <span class="sep"> · </span>
+              <a class="title" href={item.url}>
+                {item.title}
+              </a>
+              <span class="sep"> · </span>
+              <span class={`state ${item.state}`}>{item.state}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
 </Shell>
+
+<style>
+  .empty {
+    color: var(--text-muted);
+  }
+
+  section {
+    margin-top: calc(var(--space) * 4);
+  }
+
+  h2 {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-section);
+    font-weight: 500;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    align-items: baseline;
+    padding: 2px 0;
+    max-width: var(--measure);
+  }
+
+  .sep,
+  .number {
+    color: var(--text-muted);
+    flex: 0 0 auto;
+    white-space: pre;
+  }
+
+  .title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .state {
+    flex: 0 0 auto;
+    color: var(--text-muted);
+  }
+
+  .state.closed {
+    color: var(--accent);
+  }
+</style>

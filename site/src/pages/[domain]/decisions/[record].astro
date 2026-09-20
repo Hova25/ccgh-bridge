@@ -1,0 +1,32 @@
+---
+import { getEntry, render } from "astro:content";
+import Prose from "../../../components/Prose.astro";
+import { leafOf, pathsFor, slugOf } from "../../../leaf";
+import { breadcrumbFor } from "../../../../../src/docs/routes";
+import { treeOf } from "../../../../../src/docs/tree";
+
+export const getStaticPaths = () =>
+  pathsFor({
+    kind: "decision",
+    params: (location) => ({ domain: location.domain, record: slugOf(location) }),
+  });
+
+const { file } = Astro.props;
+const { entries, entry, currentUrl } = await leafOf({ file });
+const tree = treeOf({ entries, currentUrl });
+
+const { Content } = await render((await getEntry("decisions", file.replace(/\.md$/, "")))!);
+
+const date =
+  entry.data.date instanceof Date
+    ? entry.data.date.toISOString().slice(0, 10)
+    : String(entry.data.date ?? "");
+const supersedes = entry.data.supersedes as string | null;
+const meta = [date, entry.data.status, supersedes ? `supersedes ${supersedes}` : null]
+  .filter(Boolean)
+  .join(" · ");
+---
+
+<Prose title={entry.data.title as string} meta={meta} crumbs={breadcrumbFor(entry.location)} tree={tree}>
+  <Content />
+</Prose>

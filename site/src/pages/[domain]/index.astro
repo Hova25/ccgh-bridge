@@ -1,0 +1,164 @@
+---
+import { getEntry, render } from "astro:content";
+import Shell from "../../components/Shell.astro";
+import Tree from "../../components/Tree.astro";
+import { entriesOf } from "../../entries";
+import { breadcrumbFor, urlFor } from "../../../../src/docs/routes";
+import { treeOf } from "../../../../src/docs/tree";
+
+export const getStaticPaths = async () => {
+  const entries = await entriesOf();
+
+  return entries
+    .filter((entry) => entry.location.kind === "domain")
+    .map((entry) => ({
+      params: { domain: entry.location.domain },
+      props: { domain: entry.location.domain },
+    }));
+};
+
+const { domain } = Astro.props;
+const entries = await entriesOf();
+const currentUrl = `/${domain}`;
+const tree = treeOf({ entries, currentUrl });
+
+const index = entries.find(
+  (entry) => entry.location.kind === "domain" && entry.location.domain === domain,
+)!;
+
+const { Content } = await render((await getEntry("domains", `${domain}/index`))!);
+
+const owned = (kind: string) =>
+  entries
+    .filter((entry) => entry.location.kind === kind && entry.location.domain === domain)
+    .sort((a, b) => a.location.file.localeCompare(b.location.file));
+
+const iterations = owned("iteration").reverse();
+const fixes = owned("fix").reverse();
+const impacting = entries.filter(
+  (entry) =>
+    entry.location.kind === "iteration" &&
+    entry.location.domain !== domain &&
+    ((entry.data.impacts as string[]) ?? []).includes(domain),
+);
+---
+
+<Shell title={index.data.title as string} crumbs={breadcrumbFor(index.location)} tree={tree}>
+  <Tree slot="tree" nodes={tree} />
+
+  <h1>{index.data.title}</h1>
+  <Content />
+
+  {
+    iterations.length > 0 && (
+      <section>
+        <h2>Iterations</h2>
+        <ul>
+          {iterations.map((entry) => (
+            <li>
+              <a href={urlFor(entry.location)}>{entry.location.iteration}</a>
+              <span class="detail">{entry.data.status}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    impacting.length > 0 && (
+      <section>
+        <h2>Iterations that changed this domain</h2>
+        <ul>
+          {impacting.map((entry) => (
+            <li>
+              <a href={urlFor(entry.location)}>{entry.location.reference}</a>
+              <span class="detail">{entry.data.status}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    owned("guide").length > 0 && (
+      <section>
+        <h2>Guide</h2>
+        <ul>
+          {owned("guide").map((entry) => (
+            <li>
+              <a href={urlFor(entry.location)}>{entry.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    fixes.length > 0 && (
+      <section>
+        <h2>Fixes</h2>
+        <ul>
+          {fixes.map((entry) => (
+            <li>
+              <a href={urlFor(entry.location)}>{entry.data.title}</a>
+              <span class="detail">
+                {(entry.data.date as Date).toISOString().slice(0, 10)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    owned("decision").length > 0 && (
+      <section>
+        <h2>Decisions</h2>
+        <ul>
+          {owned("decision").map((entry) => (
+            <li>
+              <a href={urlFor(entry.location)}>{entry.data.title}</a>
+              <span class="detail">{entry.data.status}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Shell>
+
+<style>
+  section {
+    margin-top: calc(var(--space) * 4);
+  }
+
+  h2 {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-section);
+    font-weight: 500;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: calc(var(--space) * 2);
+    padding: 2px 0;
+    max-width: var(--measure);
+  }
+
+  .detail {
+    color: var(--text-muted);
+  }
+</style>

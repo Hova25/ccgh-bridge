@@ -5,6 +5,7 @@ import { repositoryRoot } from "./project";
 export type Configuration = {
   content?: string;
   title?: string;
+  repository?: string;
   check?: string[];
   language?: { refuse: string[] };
 };

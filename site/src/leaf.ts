@@ -2,6 +2,8 @@ import { urlFor } from "../../src/docs/routes";
 import type { ContentLocation } from "../../src/model/paths";
 import { entriesOf } from "./entries";
 
+export { slugOf } from "../../src/docs/leaf";
+
 export const pathsFor = async ({
   kind,
   params,

@@ -77,4 +77,12 @@ describe("what ccgh docs tells Astro", () => {
 
     expect(plan({ argv: [], cwd: root }).name).toBe("The harness");
   });
+
+  it("links an issue only when the repository says where its issues live", async () => {
+    expect(plan({ argv: [], cwd: root }).repository).toBe("");
+
+    await writeFile(join(root, "ccgh.json"), '{ "repository": "Hova25/ccgh-bridge" }', "utf8");
+
+    expect(plan({ argv: [], cwd: root }).repository).toBe("Hova25/ccgh-bridge");
+  });
 });

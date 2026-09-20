@@ -1,0 +1,110 @@
+---
+import { getEntry, render } from "astro:content";
+import Shell from "../../../components/Shell.astro";
+import TaskRow from "../../../components/TaskRow.astro";
+import Tree from "../../../components/Tree.astro";
+import { entriesOf } from "../../../entries";
+import { breadcrumbFor, urlFor } from "../../../../../src/docs/routes";
+import { treeOf } from "../../../../../src/docs/tree";
+
+export const getStaticPaths = async () => {
+  const entries = await entriesOf();
+
+  return entries
+    .filter((entry) => entry.location.kind === "iteration")
+    .map((entry) => ({
+      params: { domain: entry.location.domain, iteration: entry.location.iteration as string },
+      props: { file: entry.location.file },
+    }));
+};
+
+const { file } = Astro.props;
+const entries = await entriesOf();
+const spec = entries.find((entry) => entry.location.file === file)!;
+const tree = treeOf({ entries, currentUrl: urlFor(spec.location) });
+
+const reference = spec.location.reference;
+const tasks = entries
+  .filter((entry) => entry.location.kind === "task" && entry.location.reference === reference)
+  .sort((a, b) => (a.data.order as number) - (b.data.order as number));
+
+const brainstorm = entries.find(
+  (entry) => entry.location.kind === "brainstorm" && entry.location.reference === reference,
+);
+
+const { Content } = await render((await getEntry("iterations", file.replace(/\.md$/, "")))!);
+
+const mirrorOf = (task: (typeof tasks)[number]) =>
+  (task.data.github ?? {}) as { state?: string | null; merged_at?: string | null };
+
+const done = tasks.filter((task) => {
+  const github = mirrorOf(task);
+
+  return github.state === "closed" || Boolean(github.merged_at);
+}).length;
+
+const dependsOn = (spec.data.depends_on as string[]) ?? [];
+const impacts = (spec.data.impacts as string[]) ?? [];
+---
+
+<Shell title={spec.data.title as string} crumbs={breadcrumbFor(spec.location)} tree={tree}>
+  <Tree slot="tree" nodes={tree} />
+
+  <p class="meta">
+    {spec.data.status}
+    {tasks.length > 0 && <> · {done}/{tasks.length} tasks</>}
+    {spec.data.validated_by && <> · validated by {spec.data.validated_by}</>}
+    {brainstorm && <> · <a href={urlFor(brainstorm.location)}>brainstorm</a></>}
+  </p>
+
+  {dependsOn.length > 0 && <p class="meta">depends on {dependsOn.join(", ")}</p>}
+  {impacts.length > 0 && <p class="meta">impacts {impacts.join(", ")}</p>}
+
+  {
+    tasks.length > 0 && (
+      <section>
+        <h2>Tasks</h2>
+        <ul>
+          {tasks.map((task) => (
+            <TaskRow
+              order={task.data.order as number}
+              title={task.data.title as string}
+              href={urlFor(task.location)}
+              issue={(task.data.issue as number | null) ?? null}
+              state={mirrorOf(task).state ?? null}
+              mergedAt={mirrorOf(task).merged_at ?? null}
+            />
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <hr />
+  <Content />
+</Shell>
+
+<style>
+  .meta {
+    color: var(--text-muted);
+    margin: 0 0 4px;
+  }
+
+  section {
+    margin-top: calc(var(--space) * 3);
+  }
+
+  h2 {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-section);
+    font-weight: 500;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>
