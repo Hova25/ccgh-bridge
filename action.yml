@@ -1,0 +1,21 @@
+name: ccgh
+description: Run a ccgh command against the repository being checked out, without installing anything in it.
+
+inputs:
+  command:
+    description: The whole ccgh command, such as "validate" or "bridge push".
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: oven-sh/setup-bun@v2
+
+    # Where GitHub unpacked this action, never the consumer's checkout — which may not be a
+    # JavaScript project at all.
+    - run: bun install --frozen-lockfile
+      shell: bash
+      working-directory: ${{ github.action_path }}
+
+    - run: ${{ github.action_path }}/bin/ccgh ${{ inputs.command }}
+      shell: bash

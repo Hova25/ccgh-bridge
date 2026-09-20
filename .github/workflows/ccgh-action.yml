@@ -1,0 +1,17 @@
+name: ccgh-action
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # By path, never by tag: a tag cannot test the commit that changes the action.
+      - uses: ./
+        with:
+          command: validate
