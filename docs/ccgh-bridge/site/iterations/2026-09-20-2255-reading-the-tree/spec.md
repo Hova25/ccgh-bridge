@@ -72,13 +72,18 @@ nowhere. It does not cross.
 | `site/src/components/` | `Shell`, `Prose`, `Tree`, `ThemeToggle`, `Search`, `BoardGroup`, `TaskRow` |
 | `site/src/styles/` | `tokens.css`, `base.css` |
 | `site/src/entries.ts` | the only module that touches `astro:content` |
-| `src/docs/` | `routes`, `tree`, `board`, `recent`, `search-index`, `leaf`, `contrast` — pure, tested by `bun test` |
+| `site/src/leaf.ts` | `pathsFor` and `leafOf`, which read the collections through it |
+| `src/docs/` | `routes`, `tree`, `board`, `recent`, `search-index`, `slugOf`, `contrast` — pure, tested by `bun test` |
 | `src/commands/docs.ts` | `ccgh docs` |
 
 The pure modules live under `src/` with the engine rather than inside the Astro project,
 because `bun test` runs there and because none of them import anything from Astro. `entries`
 is the boundary: it reads the collections and returns the same `ParsedEntry[]` the engine's
 validator already defines, so everything downstream of it is testable without a browser.
+
+`leaf` is the one the origin had on the wrong side of that line, and task 2 found it: two of
+its three exports call `entriesOf`. `slugOf` is pure and moves with the others; `pathsFor` and
+`leafOf` stay beside `entries`, where what they depend on actually lives.
 
 ### Where Astro runs, and where it writes
 
