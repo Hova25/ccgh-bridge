@@ -35,24 +35,24 @@ worse than carrying it.
 `reconcile` has no module of its own: it is a composition of `push` and `sync` plus two
 reports, and it lives in the command. Giving it a module would be a file that only forwards.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 Copy `relink.test.ts` with the two mechanical changes.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/bridge/relink.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Copy `relink.ts`, imports only.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
