@@ -1,9 +1,11 @@
 ---
 title: Reading the tree
-status: draft
+status: ready
 depends_on: []
 impacts:
   - plugin
+validated_by: hovannes
+validated_at: '2026-09-20T23:01:48.602Z'
 ---
 
 # Reading the tree
