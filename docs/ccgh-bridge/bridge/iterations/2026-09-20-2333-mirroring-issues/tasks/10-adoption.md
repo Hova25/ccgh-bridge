@@ -4,9 +4,9 @@ order: 10
 issue: 43
 github:
   state: null
-  pr: null
-  merged_at: null
-  synced_at: null
+  pr: 65
+  merged_at: '2026-09-21T00:08:24Z'
+  synced_at: '2026-09-21T00:08:37.865Z'
 ---
 
 # Adoption
