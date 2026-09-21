@@ -1,10 +1,19 @@
 ---
 title: Plugin shell
-status: ready
+status: active
 depends_on: []
 impacts: []
 validated_by: hovannes
 validated_at: '2026-09-20T22:09:23.369Z'
+launched_by: hovannes
+launched_at: '2026-09-21T00:01:31.417Z'
+launched_tasks:
+  - tasks/01-manifest-and-first-skill.md
+  - tasks/02-the-remaining-skills.md
+  - tasks/03-hook-rules.md
+  - tasks/04-hook-wiring.md
+  - tasks/05-configuration-for-language-and-checks.md
+  - tasks/06-adoption.md
 ---
 
 # Plugin shell

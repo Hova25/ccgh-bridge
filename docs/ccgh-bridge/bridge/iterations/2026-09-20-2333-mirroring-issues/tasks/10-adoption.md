@@ -29,7 +29,7 @@ it built judge everything that came before it.
 - Consumes: everything tasks 1 to 9 produced.
 - Produces: nothing new. The iteration ends here.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 The assertion is about this repository rather than the code, and it belongs with the others
 that guard the plugin:
@@ -49,13 +49,13 @@ it("carries the workflows ccgh init writes, pointed at itself", async () => {
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test tests/plugin.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 ```bash
 ./bin/ccgh init --from ./
@@ -80,7 +80,7 @@ to `active` is what creates their issues, and closing those issues is what makes
 
 The README stops saying the bridge is not built, and gains `ccgh init` and `ccgh bridge`.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -90,4 +90,4 @@ And the real one: a green `ccgh-validate` on a pull request, an issue in this re
 by the bridge rather than by hand, and a specification reaching `shipped` without anyone typing
 the word.
 
-- [ ] **Commit**
+- [x] **Commit**

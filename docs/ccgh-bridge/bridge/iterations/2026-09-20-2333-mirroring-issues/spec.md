@@ -1,12 +1,25 @@
 ---
 title: Mirroring issues
-status: ready
+status: active
 depends_on: []
 impacts:
   - plugin
   - engine
 validated_by: hovannes
 validated_at: '2026-09-20T23:37:22.830Z'
+launched_by: hovannes
+launched_at: '2026-09-20T23:59:41.693Z'
+launched_tasks:
+  - tasks/01-the-composite-action.md
+  - tasks/02-the-github-client-and-the-issue-body.md
+  - tasks/03-planning-and-applying.md
+  - tasks/04-writing-the-mirror-back.md
+  - tasks/05-the-return-and-shipped.md
+  - tasks/06-fix-records.md
+  - tasks/07-relink-and-reconcile.md
+  - tasks/08-the-bridge-command.md
+  - tasks/09-init-and-the-workflows.md
+  - tasks/10-adoption.md
 ---
 
 # Mirroring issues

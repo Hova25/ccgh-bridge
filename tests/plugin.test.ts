@@ -167,3 +167,21 @@ describe("the site", () => {
     ]);
   });
 });
+
+describe("the workflows", () => {
+  it("are the ones ccgh init writes, pointed at this repository's own action", async () => {
+    const directory = join(root, ".github", "workflows");
+    const written = (await readdir(directory)).filter((name) => name.startsWith("ccgh-")).sort();
+
+    expect(written).toContain("ccgh-validate.yml");
+    expect(written).toContain("ccgh-push.yml");
+    expect(written).toContain("ccgh-sync.yml");
+
+    for (const name of written.filter((file) => file !== "ccgh-action.yml")) {
+      const body = await readFile(join(directory, name), "utf8");
+
+      expect(body.startsWith("# written by ccgh init"), name).toBe(true);
+      expect(body, name).toContain("uses: ./");
+    }
+  });
+});

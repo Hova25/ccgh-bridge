@@ -1,8 +1,19 @@
 ---
 title: Bootstrap
-status: draft
+status: active
 depends_on: []
 impacts: []
+validated_by: hovannes
+validated_at: '2026-09-21T00:01:31.278Z'
+launched_by: hovannes
+launched_at: '2026-09-21T00:01:31.328Z'
+launched_tasks:
+  - tasks/01-repository-and-project-resolution.md
+  - tasks/02-content-model.md
+  - tasks/03-the-validate-command.md
+  - tasks/04-the-scaffold-command.md
+  - tasks/05-the-promote-command.md
+  - tasks/06-the-require-a-home-command.md
 ---
 
 # Bootstrap
