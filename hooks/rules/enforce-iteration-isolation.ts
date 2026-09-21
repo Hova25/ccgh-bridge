@@ -1,6 +1,6 @@
+import { commitCommand } from "../commit";
 import type { Decide } from "../context";
 
-const commitCommand = /(^|[;&|]\s*)git\s+(?:-[^\s]+\s+)*commit\b/;
 const escaped = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export const decide: Decide = ({ input, context }) => {

@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
-import type { Context, Decide, HookInput } from "./context";
+import { commitDirectory } from "./commit";
+import type { Decide, HookInput } from "./context";
 import { decide as checkStagedFiles } from "./rules/check-staged-files";
 import { decide as enforceIterationIsolation } from "./rules/enforce-iteration-isolation";
 import { decide as enforceLanguage } from "./rules/enforce-language";
@@ -8,7 +9,7 @@ import { decide as protectMainBranch } from "./rules/protect-main-branch";
 import { decide as refuseBashWritesToContent } from "./rules/refuse-bash-writes-to-content";
 import { decide as requireAHome } from "./rules/require-a-home";
 import { decide as requireDecisionNotice } from "./rules/require-decision-notice";
-import { shell } from "./shell";
+import { project, shell } from "./shell";
 
 const rules: Record<string, Decide> = {
   "check-staged-files": checkStagedFiles,
@@ -56,7 +57,13 @@ if (!decide) refuse(`hook: no rule named ${name ?? "<nothing>"}`);
 let verdict: string | null = null;
 
 try {
-  verdict = (decide as Decide)({ input: await readInput(), context: shell as Context });
+  const input = await readInput();
+  const directory = commitDirectory({
+    command: input.tool_input?.command ?? "",
+    cwd: input.cwd ?? project(),
+  });
+
+  verdict = (decide as Decide)({ input, context: shell({ directory }) });
 } catch (error) {
   refuse(`hook failed: ${(error as Error).message}`);
 }

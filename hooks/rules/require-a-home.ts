@@ -1,7 +1,7 @@
 import { homeOf } from "../../src/commands/require-a-home";
+import { commitCommand } from "../commit";
 import type { Decide } from "../context";
 
-const commitCommand = /(^|[;&|]\s*)git\s+(?:-[^\s]+\s+)*commit\b/;
 const taskBranch = /^task\/\d{2}-[a-z0-9-]+$/;
 const fixBranch = /^fix\/[a-z0-9-]+\/[a-z0-9-]+$/;
 
