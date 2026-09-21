@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { configuration } from "../configuration";
@@ -10,6 +10,10 @@ import { repositoryRoot } from "../project";
 const marker = "# written by ccgh init; edits are overwritten";
 
 const templates = fileURLToPath(new URL("../workflows", import.meta.url));
+
+// Beside the five rather than among them, so that "written when a condition holds" is visible
+// in the layout instead of hiding in a list inside this command.
+const optional = join(templates, "optional");
 
 const defaultAction = "Hova25/ccgh-bridge@v1";
 
@@ -41,8 +45,29 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
   await mkdir(directory, { recursive: true });
 
   const refused: string[] = [];
+  const wanted = new Map<string, boolean>([["ccgh-pages.yml", Boolean(settings.site)]]);
+  const names = [
+    ...(await readdir(templates)).filter((name) => name.endsWith(".yml")),
+    ...(await readdir(optional)),
+  ].sort();
 
-  for (const name of (await readdir(templates)).sort()) {
+  for (const name of names) {
+    const source = existsSync(join(templates, name)) ? templates : optional;
+
+    // A repository that has not said where it publishes does not want a workflow that
+    // publishes: `ccgh docs --build` refuses without `site`, so the job could only fail.
+    if (wanted.get(name) === false) {
+      const destination = join(directory, name);
+
+      if (existsSync(destination)) {
+        const existing = await readFile(destination, "utf8");
+
+        if (existing.startsWith(marker)) await rm(destination);
+      }
+
+      continue;
+    }
+
     const destination = join(directory, name);
 
     if (existsSync(destination)) {
@@ -54,7 +79,7 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
       }
     }
 
-    let body = (await readFile(join(templates, name), "utf8")).replaceAll("__ACTION__", action);
+    let body = (await readFile(join(source, name), "utf8")).replaceAll("__ACTION__", action);
 
     if (name === "ccgh-validate.yml") {
       body += checkSteps({
@@ -75,9 +100,9 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
     process.stderr.write(`refusing ${name}: it was not written by ccgh init\n`);
   }
 
-  process.stdout.write(
-    `${(await readdir(templates)).length - refused.length} workflow(s) written, pointing at ${action}\n`,
-  );
+  const written = names.filter((name) => wanted.get(name) !== false).length - refused.length;
+
+  process.stdout.write(`${written} workflow(s) written, pointing at ${action}\n`);
 
   return refused.length === 0 ? 0 : 1;
 };
