@@ -1,7 +1,7 @@
 ---
 title: Hook rules
 order: 3
-issue: null
+issue: 47
 github:
   state: null
   pr: null
@@ -35,9 +35,9 @@ behaviour are two diffs rather than one.
 **Interfaces**
 
 - Consumes: `contentRoot` from `src/project` and `homeOf` from `src/commands/require-a-home` (the engine); nothing from tasks 1 and 2.
-- Produces: `type Decide = (input: { input: HookInput; context: Context }) => string | null`, one per rule, each exported as `decide`; and `type Context = { currentBranch: () => string; stagedFiles: () => string[]; check: (input: { files: string[] }) => string; content: () => string; fileExists: (file: string) => boolean }` from `hooks/context.ts`, which task 4 wires to the real shell. `content()` is the content directory relative to the repository, already resolved, so that a rule never reads a file system to make a decision; `fileExists` is what `protect-generated-frontmatter` has always needed.
+- Produces: `type Decide = (input: { input: HookInput; context: Context }) => string | null`, one per rule, each exported as `decide`; and `type Context = { currentBranch: () => string; stagedFiles: () => string[]; check: (input: { files: string[] }) => string; project: () => string }` from `hooks/context.ts`, which task 4 wires to the real shell.
 
-- [x] **Write the failing test**
+- [ ] **Write the failing test**
 
 The tests come with the code. Copy the five test files the origin has —
 `check-staged-files`, `enforce-iteration-isolation`, `protect-generated-frontmatter`,
@@ -96,13 +96,13 @@ it("follows the repository's content root rather than one repository's", () => {
 });
 ```
 
-- [x] **Run it to verify it fails**
+- [ ] **Run it to verify it fails**
 
 ```bash
 bun test hooks
 ```
 
-- [x] **Write the implementation**
+- [ ] **Write the implementation**
 
 `hooks/context.ts` declares the `Context` type and nothing else; the implementation that
 shells out is task 4's. Keeping the type here is what lets every rule be tested with a fake.
@@ -117,7 +117,7 @@ engine now owns; here the rule resolves the content root, calls `homeOf` from
 home", used by the hook and by the command, is what stops the two from disagreeing — which
 they have, before, and it cost two red checks.
 
-- [x] **Run the tests to verify they pass**
+- [ ] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -126,4 +126,4 @@ bun run verify
 The rules are inert until task 4 wires them. That is the point: a rule proved correct before
 anything can invoke it.
 
-- [x] **Commit**
+- [ ] **Commit**

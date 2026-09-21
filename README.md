@@ -17,7 +17,8 @@ It ships as one plugin carrying four things:
   tree.
 
 A consuming repository keeps only two things of its own: its content under
-`docs/ccgh-bridge/`, and the GitHub Actions workflows that `ccgh init` writes for it. The
+`docs/ccgh-bridge/`, and the five GitHub Actions workflows `ccgh init` writes for it — each
+around twenty lines, because everything heavy belongs to the action this repository ships. The
 directory is a convention, not a rule — `ccgh.json` at the repository root can name another
 one — and it sits inside `docs/` rather than owning it, so a repository's own documentation
 is left alone.
@@ -28,6 +29,16 @@ is left alone.
 /plugin marketplace add Hova25/ccgh-bridge
 /plugin install ccgh@ccgh-bridge
 ```
+
+Then, once, in the repository that will use it:
+
+```
+ccgh init
+```
+
+It writes the workflows and records which reference they use. They reach the engine through
+`uses:`, so the repository clones nothing and installs nothing; this repository must be public
+for that, or the workflow needs a token of its own.
 
 Install Bun first: the plugin's installer runs `bun install`, and every command and hook it
 carries is run by Bun.
@@ -43,7 +54,8 @@ carries is run by Bun.
   "language": { "refuse": [] },
   "title": "The harness",
   "repository": "owner/name",
-  "site": "https://owner.github.io/name"
+  "site": "https://owner.github.io/name",
+  "action": "Hova25/ccgh-bridge@v1"
 }
 ```
 
@@ -56,6 +68,7 @@ the repository this grew in needed, so a repository that writes French silences 
 its issues live, so that an issue number becomes a link; without it the number is printed
 plain. `site` is where the built site is published, and `ccgh docs --build` refuses without
 it — a site built with the wrong base works locally and breaks the moment it is published.
+`action` is what the generated workflows put behind `uses:`; `ccgh init --from` sets it.
 
 ## Requirements
 
@@ -64,9 +77,12 @@ directly by Bun — there is no build step and no compiled binary to download.
 
 ## Status
 
-The engine, the plugin shell and the site are done: the skills, the hooks, `ccgh` and
-`ccgh docs` all work, and this repository enables the plugin on itself. The GitHub bridge is
-not built yet — `ccgh init` does not exist, so no issue is ever created.
+The engine, the plugin shell, the site and the bridge are done. This repository enables the
+plugin on itself and runs the workflows `ccgh init` writes for it, reaching its own action by
+path so that a change to the action is tested by the pull request that makes it.
+
+Nothing is published yet: there is no `v1` tag, so `ccgh init` without `--from` points at a
+reference that does not exist. Tagging is a deliberate act and nobody has taken it.
 
 This repository develops itself with its own workflow: its specifications, decisions and
 tasks live under `docs/ccgh-bridge/`, and every change to it goes through the lifecycle it

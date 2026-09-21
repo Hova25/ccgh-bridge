@@ -1,7 +1,7 @@
 ---
 title: Planning and applying
 order: 3
-issue: null
+issue: 36
 github:
   state: null
   pr: null

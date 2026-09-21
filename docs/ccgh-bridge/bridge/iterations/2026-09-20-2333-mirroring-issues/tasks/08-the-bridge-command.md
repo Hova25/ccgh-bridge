@@ -1,7 +1,7 @@
 ---
 title: The bridge command
 order: 8
-issue: null
+issue: 41
 github:
   state: null
   pr: null

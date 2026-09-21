@@ -1,7 +1,7 @@
 ---
 title: The shell and components
 order: 4
-issue: null
+issue: 54
 github:
   state: null
   pr: null
@@ -31,7 +31,7 @@ the site. Everything else is copied.
 - Consumes: `TreeNode` from `src/docs/tree`, `BoardEntry` from `src/docs/board`, the tokens from task 3, and `searchIndexOf` through the endpoint task 5 adds.
 - Produces: `Shell` with `{ title: string; crumbs: Array<{ label: string; href: string }>; tree: TreeNode[] }`, and the six components the pages compose. Task 5 uses all of them.
 
-- [x] **Write the failing test**
+- [ ] **Write the failing test**
 
 A component is not unit-testable here and pretending otherwise would produce a test that
 asserts markup. What is testable is the decision the component is not allowed to make:
@@ -59,13 +59,13 @@ it("carries no name from the repository this came from", async () => {
 });
 ```
 
-- [x] **Run it to verify it fails**
+- [ ] **Run it to verify it fails**
 
 ```bash
 bun test src/commands/docs.test.ts
 ```
 
-- [x] **Write the implementation**
+- [ ] **Write the implementation**
 
 Copy the seven components from the origin. Change two things and nothing else:
 `../site/tree` becomes `../../../src/docs/tree` and the imports beside it follow; and the
@@ -78,7 +78,7 @@ The search palette, the theme toggle and the tree carry inline scripts. They are
 including the `is:inline` attributes, because that is what makes the theme apply before the
 first paint rather than after it.
 
-- [x] **Run the tests to verify they pass**
+- [ ] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -88,4 +88,4 @@ Then look at it. The page from task 1 is still the bare list, so wrap it in the 
 temporarily to see the sidebar, the theme toggle and the search palette in both themes. That
 temporary wrapping is thrown away in task 5, which writes the real pages.
 
-- [x] **Commit**
+- [ ] **Commit**

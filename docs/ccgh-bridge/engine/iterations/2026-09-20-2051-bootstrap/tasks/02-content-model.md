@@ -1,7 +1,7 @@
 ---
 title: Content model
 order: 2
-issue: null
+issue: 59
 github:
   state: null
   pr: null

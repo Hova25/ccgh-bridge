@@ -1,7 +1,7 @@
 ---
 title: Hook wiring
 order: 4
-issue: null
+issue: 48
 github:
   state: null
   pr: null
@@ -34,7 +34,7 @@ loaded. That is the first time anything in this repository is enforced rather th
 - Consumes: every `decide` from task 3, and the `Context` type from `hooks/context.ts`.
 - Produces: `bun "${CLAUDE_PLUGIN_ROOT}/hooks/run.ts" <rule>`, the command `hooks.json` registers; and `hooks/shell.ts`, the real `Context` — `currentBranch`, `stagedFiles`, `check` and `project`, the last reading `CLAUDE_PROJECT_DIR` and falling back to the working directory.
 
-- [x] **Write the failing test**
+- [ ] **Write the failing test**
 
 `hooks/run.test.ts` runs the entry point as a process, because what is being tested is the
 exit code a hook produces and nothing else can observe it:
@@ -94,13 +94,13 @@ describe("the hook entry point", () => {
 The last two are the ones worth having. A hook that fails open is worse than no hook, because
 it is believed.
 
-- [x] **Run it to verify it fails**
+- [ ] **Run it to verify it fails**
 
 ```bash
 bun test hooks/run.test.ts
 ```
 
-- [x] **Write the implementation**
+- [ ] **Write the implementation**
 
 `hooks/run.ts` keeps both shapes the origin had: a refusal exits 2 with the reason on stderr,
 and a rule that asks rather than refuses writes the `permissionDecision: "ask"` payload and
@@ -141,7 +141,7 @@ Add to `tests/plugin.test.ts` an assertion that every rule file under `hooks/rul
 in `hooks.json`, and that every command named there resolves to a file. A rule nobody
 registers is a rule nobody runs, and it looks exactly like a rule that passes.
 
-- [x] **Run the tests to verify they pass**
+- [ ] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -156,4 +156,4 @@ claude --plugin-dir .
 
 In that session, on `main`, ask for a commit. It is refused, and the reason names the branch.
 
-- [x] **Commit**
+- [ ] **Commit**

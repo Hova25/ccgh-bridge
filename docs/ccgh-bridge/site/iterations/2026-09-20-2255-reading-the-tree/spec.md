@@ -1,11 +1,21 @@
 ---
 title: Reading the tree
-status: ready
+status: active
 depends_on: []
 impacts:
   - plugin
 validated_by: hovannes
 validated_at: '2026-09-20T23:01:48.602Z'
+launched_by: hovannes
+launched_at: '2026-09-21T00:01:31.503Z'
+launched_tasks:
+  - tasks/01-the-command-and-the-skeleton.md
+  - tasks/02-the-pure-modules.md
+  - tasks/03-the-styles.md
+  - tasks/04-the-shell-and-components.md
+  - tasks/05-the-pages.md
+  - tasks/06-the-static-build.md
+  - tasks/07-adoption.md
 ---
 
 # Reading the tree

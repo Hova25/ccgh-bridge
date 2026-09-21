@@ -1,7 +1,7 @@
 ---
 title: The validate command
 order: 3
-issue: null
+issue: 60
 github:
   state: null
   pr: null

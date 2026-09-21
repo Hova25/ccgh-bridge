@@ -92,6 +92,27 @@ const pushTo = ({ reference, run }: { reference: string; run: Run }): void => {
   }
 };
 
+// Where the clone was standing before the bridge moved it. On a runner the checkout is
+// throwaway and nobody notices; in a working clone, leaving it detached silently strands
+// whatever the person was doing — which it did, once, to the branch that wrote this comment.
+const standingOn = ({ run }: { run: Run }): string => {
+  try {
+    const branch = run({ command: "git", args: ["rev-parse", "--abbrev-ref", "HEAD"] });
+
+    return branch === "HEAD" ? run({ command: "git", args: ["rev-parse", "HEAD"] }) : branch;
+  } catch {
+    // A clone whose HEAD points at a branch that has no commits yet: there is nowhere to
+    // return to, and asking is not worth failing the mirror over.
+    return "";
+  }
+};
+
+const standBackOn = ({ ref, run }: { ref: string; run: Run }): void => {
+  if (!ref) return;
+
+  run({ command: "git", args: ["checkout", ref] });
+};
+
 export const commitToIterationBranch = async ({
   reference,
   apply,
@@ -104,6 +125,28 @@ export const commitToIterationBranch = async ({
   message: string;
   shipping?: boolean;
   run?: Run;
+}): Promise<{ branch: string; committed: boolean }> => {
+  const was = standingOn({ run });
+
+  try {
+    return await commitThere({ reference, apply, message, shipping, run });
+  } finally {
+    standBackOn({ ref: was, run });
+  }
+};
+
+const commitThere = async ({
+  reference,
+  apply,
+  message,
+  shipping,
+  run,
+}: {
+  reference: string;
+  apply: () => Promise<string[]>;
+  message: string;
+  shipping: boolean;
+  run: Run;
 }): Promise<{ branch: string; committed: boolean }> => {
   const alive =
     run({ command: "git", args: ["ls-remote", "--heads", "origin", `refs/heads/${reference}`] })
