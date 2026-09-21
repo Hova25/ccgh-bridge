@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -65,22 +65,93 @@ const writeInstructions = async ({
   return true;
 };
 
+const nodeVersion = ({ repository }: { repository: string }): string => {
+  const file = [".nvmrc", ".node-version"].find((name) => existsSync(join(repository, name)));
+
+  return file ? `node-version-file: ${file}` : "node-version: lts/*";
+};
+
+const setupNode = ({ repository, cache }: { repository: string; cache?: string }): string[] => [
+  "      - uses: actions/setup-node@v4",
+  "        with:",
+  `          ${nodeVersion({ repository })}`,
+  ...(cache ? [`          cache: ${cache}`] : []),
+];
+
+const declaresPackageManager = ({ repository }: { repository: string }): boolean => {
+  const manifest = join(repository, "package.json");
+
+  if (!existsSync(manifest)) return false;
+
+  return typeof JSON.parse(readFileSync(manifest, "utf8")).packageManager === "string";
+};
+
+// The lockfile names the package manager, and installing with any other one either fails on
+// the frozen lockfile or resolves different versions than the ones the repository tested.
+const installSteps = ({ repository }: { repository: string }): string[][] => {
+  const has = (name: string) => existsSync(join(repository, name));
+
+  if (has("bun.lock") || has("bun.lockb")) {
+    return [["      - uses: oven-sh/setup-bun@v2"], ["      - run: bun install --frozen-lockfile"]];
+  }
+
+  if (has("pnpm-lock.yaml")) {
+    // pnpm/action-setup refuses to guess a version unless package.json declares one.
+    const version = declaresPackageManager({ repository })
+      ? []
+      : ["        with:", "          version: latest"];
+
+    return [
+      ["      - uses: pnpm/action-setup@v4", ...version],
+      setupNode({ repository, cache: "pnpm" }),
+      ["      - run: pnpm install --frozen-lockfile"],
+    ];
+  }
+
+  // Yarn 2 and later is fetched by corepack, and the cache option would ask Yarn 1 for its
+  // cache directory before corepack has replaced it.
+  if (has("yarn.lock") && has(".yarnrc.yml")) {
+    return [
+      setupNode({ repository }),
+      ["      - run: corepack enable"],
+      ["      - run: yarn install --immutable"],
+    ];
+  }
+
+  if (has("yarn.lock")) {
+    return [
+      setupNode({ repository, cache: "yarn" }),
+      ["      - run: yarn install --frozen-lockfile"],
+    ];
+  }
+
+  if (has("package-lock.json") || has("npm-shrinkwrap.json")) {
+    return [setupNode({ repository, cache: "npm" }), ["      - run: npm ci"]];
+  }
+
+  if (has("package.json")) return [setupNode({ repository }), ["      - run: npm install"]];
+
+  return [];
+};
+
 // A repository's own checks are its own: the commands come from `check` in ccgh.json, and the
 // toolchain they need is inferred from what the repository looks like. This is the one part of
 // the generated workflow that cannot be the same everywhere.
-const checkSteps = ({ commands, bun }: { commands: string[]; bun: boolean }): string => {
+const checkSteps = ({
+  commands,
+  repository,
+}: {
+  commands: string[];
+  repository: string;
+}): string => {
   if (commands.length === 0) return "";
 
-  const setup = bun
-    ? [
-        "",
-        "      - uses: oven-sh/setup-bun@v2",
-        "",
-        "      - run: bun install --frozen-lockfile",
-      ].join("\n")
-    : "";
+  const steps = [
+    ...installSteps({ repository }),
+    ...commands.map((command) => [`      - run: ${command}`]),
+  ];
 
-  return [setup, ...commands.map((command) => `\n      - run: ${command}`)].join("\n");
+  return steps.map((lines) => `\n${lines.join("\n")}`).join("\n");
 };
 
 export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promise<number> => {
@@ -132,7 +203,7 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
     if (name === "ccgh-validate.yml") {
       body += checkSteps({
         commands: settings.check ?? [],
-        bun: existsSync(join(repository, "package.json")),
+        repository,
       });
     }
 

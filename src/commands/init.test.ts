@@ -182,3 +182,80 @@ describe("ccgh init and CLAUDE.md", () => {
     expect(await instructions()).toBe(broken);
   });
 });
+
+describe("ccgh init and the repository's checks", () => {
+  const validate = async ({ files }: { files: Record<string, string> }) => {
+    await writeFile(join(root, "ccgh.json"), '{ "check": ["npm run lint"] }\n', "utf8");
+
+    for (const [name, content] of Object.entries(files)) {
+      await writeFile(join(root, name), content, "utf8");
+    }
+
+    await run({ argv: [], cwd: root });
+
+    return readFile(join(root, workflows, "ccgh-validate.yml"), "utf8");
+  };
+
+  it("installs with bun when the repository has a bun lockfile", async () => {
+    const written = await validate({ files: { "package.json": "{}", "bun.lock": "" } });
+
+    expect(written).toContain("uses: oven-sh/setup-bun@v2");
+    expect(written).toContain("run: bun install --frozen-lockfile");
+    expect(written.trimEnd().endsWith("- run: npm run lint")).toBe(true);
+  });
+
+  it("installs with pnpm, letting package.json name its version", async () => {
+    const written = await validate({
+      files: { "package.json": '{ "packageManager": "pnpm@10.23.0" }', "pnpm-lock.yaml": "" },
+    });
+
+    expect(written).toContain("uses: pnpm/action-setup@v4");
+    expect(written).not.toContain("version: latest");
+    expect(written).toContain("cache: pnpm");
+    expect(written).toContain("run: pnpm install --frozen-lockfile");
+    expect(written).not.toContain("setup-bun");
+  });
+
+  it("asks pnpm/action-setup for a version when package.json names none", async () => {
+    const written = await validate({ files: { "package.json": "{}", "pnpm-lock.yaml": "" } });
+
+    expect(written).toContain("version: latest");
+  });
+
+  it("installs with Yarn 1 or with a corepack Yarn, by the presence of .yarnrc.yml", async () => {
+    const classic = await validate({ files: { "package.json": "{}", "yarn.lock": "" } });
+
+    expect(classic).toContain("cache: yarn");
+    expect(classic).toContain("run: yarn install --frozen-lockfile");
+
+    const berry = await validate({ files: { ".yarnrc.yml": "" } });
+
+    expect(berry).toContain("run: corepack enable");
+    expect(berry).toContain("run: yarn install --immutable");
+    expect(berry).not.toContain("cache: yarn");
+  });
+
+  it("installs with npm ci when there is an npm lockfile, npm install when there is none", async () => {
+    const locked = await validate({
+      files: { "package.json": "{}", "package-lock.json": "{}", ".nvmrc": "22\n" },
+    });
+
+    expect(locked).toContain("run: npm ci");
+    expect(locked).toContain("node-version-file: .nvmrc");
+
+    await rm(join(root, "package-lock.json"));
+    await rm(join(root, ".nvmrc"));
+
+    const unlocked = await validate({ files: {} });
+
+    expect(unlocked).toContain("run: npm install");
+    expect(unlocked).toContain("node-version: lts/*");
+  });
+
+  it("installs nothing for a repository without package.json", async () => {
+    const written = await validate({ files: {} });
+
+    expect(written).not.toContain("setup-");
+    expect(written).toContain("run: npm run lint");
+  });
+});
