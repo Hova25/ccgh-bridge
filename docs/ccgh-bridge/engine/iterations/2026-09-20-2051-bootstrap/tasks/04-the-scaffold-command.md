@@ -1,7 +1,7 @@
 ---
 title: The scaffold command
 order: 4
-issue: null
+issue: 61
 github:
   state: null
   pr: null
