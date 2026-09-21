@@ -1,6 +1,6 @@
 ---
 title: Mirroring issues
-status: active
+status: shipped
 depends_on: []
 impacts:
   - plugin
