@@ -1,9 +1,9 @@
 import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { configuration } from "../configuration";
-import { repositoryRoot } from "../project";
+import { contentRoot, repositoryRoot } from "../project";
 
 // Ownership is a line rather than a manifest: a manifest is one more file to go stale, and a
 // marker travels with the thing it marks.
@@ -16,6 +16,54 @@ const templates = fileURLToPath(new URL("../workflows", import.meta.url));
 const optional = join(templates, "optional");
 
 const defaultAction = "Hova25/ccgh-bridge@v1";
+
+// CLAUDE.md is shared with the repository's own instructions, so ownership is a delimited block
+// rather than the whole file: everything outside the markers is never touched.
+const begin = "<!-- ccgh:begin — written by ccgh init; edits inside are overwritten -->";
+const beginPrefix = "<!-- ccgh:begin";
+const end = "<!-- ccgh:end -->";
+
+const instructionsTemplate = fileURLToPath(new URL("../templates/claude-md.md", import.meta.url));
+
+const writeInstructions = async ({
+  repository,
+  cwd,
+}: {
+  repository: string;
+  cwd: string;
+}): Promise<boolean> => {
+  const file = join(repository, "CLAUDE.md");
+  const content = relative(repository, contentRoot({ from: cwd }))
+    .split(sep)
+    .join("/");
+  const template = await readFile(instructionsTemplate, "utf8");
+  const block = `${begin}\n\n${template.replaceAll("__CONTENT__", content).trimEnd()}\n\n${end}`;
+
+  if (!existsSync(file)) {
+    await writeFile(file, `${block}\n`, "utf8");
+    return true;
+  }
+
+  const existing = await readFile(file, "utf8");
+  const start = existing.indexOf(beginPrefix);
+
+  if (start === -1) {
+    const separator = existing.endsWith("\n") ? "\n" : "\n\n";
+    await writeFile(file, `${existing}${separator}${block}\n`, "utf8");
+    return true;
+  }
+
+  const stop = existing.indexOf(end, start);
+
+  // Replacing up to the end of the file would delete whatever the repository wrote after it.
+  if (stop === -1) return false;
+
+  const updated = `${existing.slice(0, start)}${block}${existing.slice(stop + end.length)}`;
+
+  if (updated !== existing) await writeFile(file, updated, "utf8");
+
+  return true;
+};
 
 // A repository's own checks are its own: the commands come from `check` in ccgh.json, and the
 // toolchain they need is inferred from what the repository looks like. This is the one part of
@@ -104,9 +152,17 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
     process.stderr.write(`refusing ${name}: it was not written by ccgh init\n`);
   }
 
+  const instructed = await writeInstructions({ repository, cwd });
+
+  if (!instructed) {
+    process.stderr.write(`refusing CLAUDE.md: its ccgh block has no ${end} line\n`);
+  }
+
   const written = names.filter((name) => wanted.get(name) !== false).length - refused.length;
 
   process.stdout.write(`${written} workflow(s) written, pointing at ${action}\n`);
 
-  return refused.length === 0 ? 0 : 1;
+  if (instructed) process.stdout.write("CLAUDE.md carries the ccgh lifecycle\n");
+
+  return refused.length === 0 && instructed ? 0 : 1;
 };

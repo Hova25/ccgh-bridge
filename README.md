@@ -16,9 +16,10 @@ It ships as one plugin carrying four things:
 - **A documentation site**, started with `ccgh docs`, that renders the repository's content
   tree.
 
-A consuming repository keeps only two things of its own: its content under
-`docs/ccgh-bridge/`, and the five GitHub Actions workflows `ccgh init` writes for it — each
-around twenty lines, because everything heavy belongs to the action this repository ships. The
+A consuming repository keeps only three things of its own: its content under
+`docs/ccgh-bridge/`, the five GitHub Actions workflows `ccgh init` writes for it — each
+around twenty lines, because everything heavy belongs to the action this repository ships —
+and the block of lifecycle rules `ccgh init` writes into its `CLAUDE.md`. The
 directory is a convention, not a rule — `ccgh.json` at the repository root can name another
 one — and it sits inside `docs/` rather than owning it, so a repository's own documentation
 is left alone.
@@ -36,9 +37,14 @@ Then, once, in the repository that will use it:
 ccgh init
 ```
 
-It writes the workflows and records which reference they use. They reach the engine through
-`uses:`, so the repository clones nothing and installs nothing; this repository must be public
-for that, or the workflow needs a token of its own.
+It writes the workflows and records which reference they use. It also writes the lifecycle
+rules into `CLAUDE.md`, between a `<!-- ccgh:begin -->` and a `<!-- ccgh:end -->` line: the
+file is created if there is none, the block is appended to one that exists, and a re-run
+replaces only the block, so the repository's own instructions around it are never touched.
+Without it the hooks refuse mistakes, but nothing tells the session how the work moves.
+
+The workflows reach the engine through `uses:`, so the repository clones nothing and installs
+nothing; this repository must be public for that, or the workflow needs a token of its own.
 
 Install Bun first: the plugin's installer runs `bun install`, and every command and hook it
 carries is run by Bun.

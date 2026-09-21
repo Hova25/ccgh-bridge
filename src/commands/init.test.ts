@@ -126,3 +126,59 @@ describe("ccgh init", () => {
     expect(await readFile(join(root, "ccgh.json"), "utf8")).toBe(formatted);
   });
 });
+
+describe("ccgh init and CLAUDE.md", () => {
+  const instructions = () => readFile(join(root, "CLAUDE.md"), "utf8");
+
+  it("creates it when there is none, holding only its own block", async () => {
+    await run({ argv: [], cwd: root });
+
+    const written = await instructions();
+
+    expect(written.startsWith("<!-- ccgh:begin")).toBe(true);
+    expect(written.trimEnd().endsWith("<!-- ccgh:end -->")).toBe(true);
+    expect(written).toContain("/ccgh:open-fix <domain>/<slug>");
+  });
+
+  it("names the content directory the repository configured", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "content": "handbook" }', "utf8");
+
+    await run({ argv: [], cwd: root });
+
+    expect(await instructions()).toContain("`handbook/`");
+  });
+
+  it("appends its block to one it did not write, leaving what was there untouched", async () => {
+    const own = "# Mine\n\nMy own rules.\n";
+    await writeFile(join(root, "CLAUDE.md"), own, "utf8");
+
+    await run({ argv: [], cwd: root });
+
+    expect((await instructions()).startsWith(`${own}\n<!-- ccgh:begin`)).toBe(true);
+  });
+
+  it("replaces only its block when re-run, keeping what surrounds it", async () => {
+    await writeFile(join(root, "CLAUDE.md"), "# Mine\n", "utf8");
+    await run({ argv: [], cwd: root });
+
+    const stale = (await instructions()).replace("The ccgh lifecycle", "Stale heading");
+    await writeFile(join(root, "CLAUDE.md"), `${stale}\n## After\n`, "utf8");
+
+    expect(await run({ argv: [], cwd: root })).toBe(0);
+
+    const written = await instructions();
+
+    expect(written.startsWith("# Mine\n")).toBe(true);
+    expect(written.endsWith("\n## After\n")).toBe(true);
+    expect(written).not.toContain("Stale heading");
+    expect(written.match(/<!-- ccgh:begin/g)).toHaveLength(1);
+  });
+
+  it("refuses one whose block lost its end marker, rather than guessing where it stops", async () => {
+    const broken = "# Mine\n\n<!-- ccgh:begin -->\nhalf a block\n";
+    await writeFile(join(root, "CLAUDE.md"), broken, "utf8");
+
+    expect(await run({ argv: [], cwd: root })).toBe(1);
+    expect(await instructions()).toBe(broken);
+  });
+});
