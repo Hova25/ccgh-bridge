@@ -26,12 +26,18 @@ $ ccgh bridge sync
 ```
 
 The counters live inside the `apply` closure that `commitToIterationBranch` calls, and they
-count what a second, fresher plan found after the checkout — `live`, not `preview`. Somewhere
-between the two the count is lost. Reading the code did not settle which, and guessing at a
-cause is how a reporting defect becomes a logic one.
+count what a second, fresher plan found after the checkout — `live`, not `preview`.
 
-**Not repaired here.** It is written down with its reproduction because the run that found it
-was a one-off trial in another repository, and the next person to see this line deserves to
-know it is known. The repair belongs with a test that pins the counters against a fake client
-and a temporary content root — which is a test the bridge does not have, and the reason the
-defect survived every other one.
+**And then it did not reproduce.** The same command, in this repository, on an iteration in the
+same state, printed `6 mirrored, 1 shipped`. So the counters are not simply broken: they count
+`live`, and `live` can legitimately be empty when something else has already done the writing —
+a cancelled workflow run, or a previous sync — while `preview`, computed from `main` before the
+checkout, still lists them.
+
+That is the likely explanation and it is still a guess. What is certain is the symptom: a run
+that wrote to a branch and reported nothing.
+
+**Not repaired here**, because a defect I cannot reproduce is not one I should patch. What it
+needs is the test the bridge has never had — the counters pinned against a fake client and a
+temporary content root — and that test is worth more than the line it would fix, since it is
+also what would have caught this from the beginning.
