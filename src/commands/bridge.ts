@@ -477,6 +477,7 @@ export const run = async ({
       const abandoned = abandonedFixIssues({
         entries: loaded.entries,
         remote: await world.client.readState(""),
+        underReview: await world.client.openPullRequestBranches(),
       });
 
       for (const item of abandoned) {

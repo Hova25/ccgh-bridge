@@ -67,17 +67,22 @@ export const planFixIssues = ({
 export const abandonedFixIssues = ({
   entries,
   remote,
+  underReview,
 }: {
   entries: ParsedEntry[];
   remote: RemoteState;
+  underReview: Set<string>;
 }): Array<{ issue: number; file: string }> => {
   const present = new Set(fixes(entries).map((entry) => entry.location.file));
 
+  // A record missing from main is abandoned only when no open pull request is still carrying
+  // it there: every fix under review has its issue before its record lands.
   return remote.issues
     .filter((issue) => issue.state === "open")
     .map((issue) => ({ issue: issue.number, file: fileFromMarker(issue.body) }))
     .filter((item): item is { issue: number; file: string } => item.file !== null)
-    .filter((item) => /^[a-z0-9-]+\/fixes\//.test(item.file) && !present.has(item.file));
+    .filter((item) => /^[a-z0-9-]+\/fixes\//.test(item.file) && !present.has(item.file))
+    .filter((item) => !underReview.has(branchForFix(item.file)));
 };
 
 export const issuesArriving = ({

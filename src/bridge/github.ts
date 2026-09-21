@@ -32,6 +32,7 @@ export type GitHubClient = {
   ensureLabel: (name: string) => Promise<void>;
   addLabel: (input: { number: number; label: string }) => Promise<void>;
   pullRequestForBranch: (input: { branch: string }) => Promise<number | null>;
+  openPullRequestBranches: () => Promise<Set<string>>;
 };
 
 export const createGitHubClient = ({
@@ -153,6 +154,16 @@ export const createGitHubClient = ({
       const exact = found.data.find((pull) => pull.head.ref === branch);
 
       return exact?.number ?? null;
+    },
+
+    openPullRequestBranches: async () => {
+      const open = await octokit.paginate(octokit.pulls.list, {
+        ...target,
+        state: "open",
+        per_page: 100,
+      });
+
+      return new Set(open.map((pull) => pull.head.ref));
     },
 
     ensureLabel: async (name) => {
