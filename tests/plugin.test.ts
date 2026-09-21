@@ -207,3 +207,13 @@ describe("the version", () => {
     for (const tag of tags) expect(tag).toBe(`v${declared}`);
   });
 });
+
+describe("the README", () => {
+  it("does not say something is unpublished once it is", async () => {
+    const readme = await readFile(join(root, "README.md"), "utf8");
+
+    // It has drifted twice: a README that is false about installation is worse than one that
+    // says nothing.
+    expect(readme).not.toMatch(/nothing is installable|not published yet|does not exist/i);
+  });
+});
