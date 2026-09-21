@@ -185,3 +185,25 @@ describe("the workflows", () => {
     }
   });
 });
+
+describe("the version", () => {
+  it("is a whole version, not the placeholder it started as", async () => {
+    const declared = (await manifest()).version as string;
+
+    expect(declared).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(declared).not.toBe("0.1.0");
+  });
+
+  it("agrees with the release tag this commit carries, when it carries one", async () => {
+    const declared = (await manifest()).version as string;
+    const pointing = Bun.spawnSync(["git", "tag", "--points-at", "HEAD"], { cwd: root });
+    const tags = pointing.stdout
+      .toString()
+      .split("\n")
+      .filter((line) => /^v\d+\.\d+\.\d+$/.test(line));
+
+    // Silent on an ordinary commit; it refuses the one case that matters, which is a release
+    // tag on a commit whose manifest says something else.
+    for (const tag of tags) expect(tag).toBe(`v${declared}`);
+  });
+});

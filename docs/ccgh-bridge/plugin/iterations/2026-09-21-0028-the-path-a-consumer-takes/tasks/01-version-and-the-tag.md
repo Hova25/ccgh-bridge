@@ -29,7 +29,7 @@ a tag that disagrees with it is a mistake a test can name.
 - Consumes: nothing.
 - Produces: the tags `v1.0.0` and `v1`. Task 3 installs from them; task 2's workflow does not care.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 ```ts
 describe("the version", () => {
@@ -51,18 +51,18 @@ describe("the version", () => {
 The second is the one that earns its place. It says nothing on an ordinary commit and refuses
 the one case that matters: a release tag on a commit whose manifest says something else.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test tests/plugin.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 `plugin.json` becomes `1.0.0`. The README gains four lines saying what a release is: bump the
 manifest, merge, tag `v<version>`, move `v1`.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -84,4 +84,4 @@ gh api repos/Hova25/ccgh-bridge/contents/action.yml?ref=v1 --jq .name
 
 A reference that GitHub can resolve is the whole deliverable.
 
-- [ ] **Commit**
+- [x] **Commit**
