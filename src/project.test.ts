@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { contentRoot, repositoryRoot } from "./project";
+import { contentDirectory, contentRoot, repositoryRoot } from "./project";
 
 let root = "";
 
@@ -67,5 +67,18 @@ describe("the content root", () => {
     await writeFile(join(root, "ccgh.json"), "{ not json", "utf8");
 
     expect(() => contentRoot({ from: root })).toThrow(/ccgh\.json is not valid JSON/);
+  });
+});
+
+describe("the content directory", () => {
+  // Rules compare it with git's paths and with each other's, which always use a forward slash.
+  it("is relative to the repository and written with forward slashes on every platform", () => {
+    expect(contentDirectory({ from: root })).toBe("docs/ccgh-bridge");
+  });
+
+  it("follows ccgh.json", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "content": "apps/site/content" }', "utf8");
+
+    expect(contentDirectory({ from: root })).toBe("apps/site/content");
   });
 });

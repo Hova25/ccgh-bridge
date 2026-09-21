@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 const configuration = "ccgh.json";
 // A consuming repository usually documents itself in `docs/` already, and every file it
@@ -40,3 +40,8 @@ export const contentRoot = ({ from }: { from: string }): string => {
 
   return isAbsolute(parsed.content) ? parsed.content : join(root, parsed.content);
 };
+
+// The content root as the rules see it: relative to the repository, with forward slashes on
+// every platform, because it is matched against git's paths and prefixed onto them.
+export const contentDirectory = ({ from }: { from: string }): string =>
+  relative(repositoryRoot({ from }), contentRoot({ from })).split(sep).join("/");

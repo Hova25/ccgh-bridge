@@ -1,5 +1,5 @@
 import { readdir, readFile } from "node:fs/promises";
-import { join, relative } from "node:path";
+import { join, relative, sep } from "node:path";
 import matter from "gray-matter";
 import { type ContentLocation, locate } from "./paths";
 
@@ -30,7 +30,7 @@ const markdownFiles = async ({
     if (item.isDirectory()) {
       found.push(...(await markdownFiles({ root, directory: full })));
     } else if (item.name.endsWith(".md")) {
-      found.push(relative(root, full));
+      found.push(relative(root, full).split(sep).join("/"));
     }
   }
 
@@ -51,7 +51,9 @@ export const loadContent = async (root: string): Promise<LoadedContent> => {
     }
 
     try {
-      const { data, content } = matter(await readFile(join(root, file), "utf8"));
+      // A Windows checkout with core.autocrlf hands every rule "\r\n", and they all split on "\n".
+      const text = (await readFile(join(root, file), "utf8")).replaceAll("\r\n", "\n");
+      const { data, content } = matter(text);
       entries.push({ location, data, body: content });
     } catch (error) {
       unreadable.push({ file, reason: (error as Error).message.split("\n")[0] as string });

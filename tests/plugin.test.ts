@@ -1,8 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import { readdir, readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = new URL("..", import.meta.url).pathname;
+const root = fileURLToPath(new URL("..", import.meta.url));
 
 const manifest = async (): Promise<Record<string, unknown>> =>
   JSON.parse(await readFile(join(root, ".claude-plugin/plugin.json"), "utf8"));
@@ -151,7 +152,12 @@ describe("the site", () => {
 
   it("has a page for every kind the validator accepts", async () => {
     const pages = (await sourceFiles(join(root, "site", "src", "pages")))
-      .map((file) => file.slice(join(root, "site", "src", "pages").length + 1))
+      .map((file) =>
+        file
+          .slice(join(root, "site", "src", "pages").length + 1)
+          .split(sep)
+          .join("/"),
+      )
       .sort();
 
     expect(pages).toEqual([

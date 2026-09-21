@@ -30,7 +30,16 @@ const readInput = async (): Promise<HookInput> => {
 
   for await (const chunk of process.stdin) chunks.push(chunk as Buffer);
 
-  return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+  const input: HookInput = JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+  const file = input.tool_input?.file_path;
+
+  // On Windows the path arrives with backslashes, and every rule matches forward-slash
+  // prefixes: left alone, each of them would silently allow what it exists to refuse.
+  if (input.tool_input && typeof file === "string") {
+    input.tool_input.file_path = file.replaceAll("\\", "/");
+  }
+
+  return input;
 };
 
 const refuse = (reason: string): never => {

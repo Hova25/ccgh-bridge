@@ -1,5 +1,4 @@
 import { readFileSync } from "node:fs";
-import { relative } from "node:path";
 import { applyActions } from "../bridge/apply";
 import { completionComment, completionsFor } from "../bridge/completion";
 import {
@@ -24,7 +23,7 @@ import { planSync, staleTasks } from "../bridge/sync";
 import { configuration } from "../configuration";
 import { loadContent } from "../model/load";
 import { validate } from "../model/validate";
-import { contentRoot, repositoryRoot } from "../project";
+import { contentDirectory, contentRoot } from "../project";
 
 export const issueUrl = ({
   repository,
@@ -352,7 +351,7 @@ export const settingsFor = ({
     token,
     repository,
     root: contentRoot({ from: cwd }),
-    content: relative(repositoryRoot({ from: cwd }), contentRoot({ from: cwd })),
+    content: contentDirectory({ from: cwd }),
   };
 };
 

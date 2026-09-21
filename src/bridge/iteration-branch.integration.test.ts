@@ -34,7 +34,7 @@ describe("commitToIterationBranch against a moved main", () => {
     const runner = join(root, "runner");
 
     git(root)("init", "-q", "--bare", origin);
-    git(root)("clone", "-q", origin, author);
+    git(root)("clone", "-q", "-c", "core.autocrlf=false", origin, author);
     identity(author);
 
     // main and an iteration branch share the task file; the branch already carries a mirror.
@@ -57,7 +57,7 @@ describe("commitToIterationBranch against a moved main", () => {
     git(author)("push", "-q", "origin", "main");
 
     // the runner checks out main, as CI does.
-    git(root)("clone", "-q", origin, runner);
+    git(root)("clone", "-q", "-c", "core.autocrlf=false", origin, runner);
     identity(runner);
 
     const result = await commitToIterationBranch({
@@ -92,7 +92,7 @@ describe("commitToIterationBranch against a moved main", () => {
     const runner = join(root, "runner");
 
     git(root)("init", "-q", "--bare", origin);
-    git(root)("clone", "-q", origin, author);
+    git(root)("clone", "-q", "-c", "core.autocrlf=false", origin, author);
     identity(author);
     write({ cwd: author, content: "state: open\n" });
     git(author)("add", ".");
@@ -100,7 +100,7 @@ describe("commitToIterationBranch against a moved main", () => {
     git(author)("branch", "-M", "main");
     git(author)("push", "-q", "origin", "main");
 
-    git(root)("clone", "-q", origin, runner);
+    git(root)("clone", "-q", "-c", "core.autocrlf=false", origin, runner);
     identity(runner);
 
     // gh is not available against a bare directory; git goes to the real repository.
@@ -136,7 +136,7 @@ describe("commitToIterationBranch against a moved main", () => {
     const runner = join(root, "runner");
 
     git(root)("init", "-q", "--bare", origin);
-    git(root)("clone", "-q", origin, author);
+    git(root)("clone", "-q", "-c", "core.autocrlf=false", origin, author);
     identity(author);
     write({ cwd: author, content: "state: open\n" });
     git(author)("add", ".");
@@ -146,7 +146,7 @@ describe("commitToIterationBranch against a moved main", () => {
     git(author)("branch", "bot/ship/harness/2026-09-13-x");
     git(author)("push", "-q", "origin", "main", "bot/ship/harness/2026-09-13-x");
 
-    git(root)("clone", "-q", origin, runner);
+    git(root)("clone", "-q", "-c", "core.autocrlf=false", origin, runner);
     identity(runner);
 
     const commands: string[] = [];
@@ -180,7 +180,7 @@ describe("commitToIterationBranch against a moved main", () => {
     const clone = join(root, "clone");
 
     git(root)("init", "-q", "--bare", origin);
-    git(root)("clone", "-q", origin, clone);
+    git(root)("clone", "-q", "-c", "core.autocrlf=false", origin, clone);
     identity(clone);
 
     write({ cwd: clone, content: "state: open\n" });
