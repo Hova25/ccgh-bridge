@@ -32,6 +32,7 @@ const fakeClient = (): GitHubClient & { calls: string[] } => {
       calls.push(`addLabel:${number}:${label}`);
     }),
     pullRequestForBranch: vi.fn(async () => null),
+    openPullRequestBranches: vi.fn(async () => new Set<string>()),
   };
 };
 

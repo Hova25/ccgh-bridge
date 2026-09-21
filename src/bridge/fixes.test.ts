@@ -128,6 +128,7 @@ describe("abandonedFixIssues", () => {
   it("reports an open issue whose fix file is absent", () => {
     expect(
       abandonedFixIssues({
+        underReview: new Set(),
         entries: [],
         remote: {
           issues: [generated({ file: "harness/fixes/2026-09-14-1200-a.md" })],
@@ -140,6 +141,7 @@ describe("abandonedFixIssues", () => {
   it("reports nothing when the fix landed", () => {
     expect(
       abandonedFixIssues({
+        underReview: new Set(),
         entries: [fix({ file: "harness/fixes/2026-09-14-1200-a.md", issue: 12 })],
         remote: {
           issues: [generated({ file: "harness/fixes/2026-09-14-1200-a.md" })],
@@ -152,6 +154,7 @@ describe("abandonedFixIssues", () => {
   it("reports nothing for a closed issue", () => {
     expect(
       abandonedFixIssues({
+        underReview: new Set(),
         entries: [],
         remote: {
           issues: [generated({ file: "harness/fixes/2026-09-14-1200-a.md", state: "closed" })],
@@ -164,9 +167,25 @@ describe("abandonedFixIssues", () => {
   it("ignores an issue generated from a task", () => {
     expect(
       abandonedFixIssues({
+        underReview: new Set(),
         entries: [],
         remote: {
           issues: [generated({ file: "harness/iterations/2026-09-14-1200-x/tasks/01-a.md" })],
+          milestones: [],
+        },
+      }),
+    ).toEqual([]);
+  });
+
+  // A fix under review has its issue and not yet its record on main. That is the normal state
+  // of every open fix pull request, not an abandoned one.
+  it("reports nothing while the fix's pull request is still open", () => {
+    expect(
+      abandonedFixIssues({
+        underReview: new Set([branchForFix("harness/fixes/2026-09-14-1200-a.md")]),
+        entries: [],
+        remote: {
+          issues: [generated({ file: "harness/fixes/2026-09-14-1200-a.md" })],
           milestones: [],
         },
       }),

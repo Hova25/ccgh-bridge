@@ -12,6 +12,7 @@ describe("createGitHubClient", () => {
       "createMilestone",
       "ensureLabel",
       "listBodies",
+      "openPullRequestBranches",
       "pullRequestForBranch",
       "readState",
       "updateBody",
