@@ -1,6 +1,6 @@
 {
   "name": "ccgh",
   "description": "A development lifecycle for a repository: specifications and tasks written as content, promoted through human gates, mirrored to GitHub issues.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "homepage": "https://github.com/Hova25/ccgh-bridge"
 }
