@@ -75,6 +75,18 @@ it — a site built with the wrong base works locally and breaks the moment it i
 [Bun](https://bun.sh). The `ccgh` executable is a TypeScript file with a shebang, run
 directly by Bun — there is no build step and no compiled binary to download.
 
+## Releasing it
+
+`plugin.json` carries the version and leads; the tags follow it. Bump it, merge, then:
+
+```
+git tag -a v1.2.3 -m "<what changed>" && git tag -f v1
+git push origin v1.2.3 && git push -f origin v1
+```
+
+`v1` is the moving major tag a consumer pins to, `v1.2.3` the one that never moves. A test
+refuses a release tag on a commit whose manifest disagrees with it.
+
 ## Status
 
 The engine, the plugin shell, the site and the bridge are done. This repository enables the
