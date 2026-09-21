@@ -1,6 +1,6 @@
 ---
 title: Bootstrap
-status: active
+status: shipped
 depends_on: []
 impacts: []
 validated_by: hovannes
