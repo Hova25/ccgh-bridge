@@ -43,7 +43,7 @@ and lets the templates be read and reviewed as prose.
     whose `reference` is `ccgh/<yyyy-mm-dd-HHMM>-adopt-ccgh` and whose files are relative to
     the content directory. Task 4 writes them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 `src/package-manager.test.ts`:
 
@@ -189,7 +189,7 @@ describe("adoptionContent", () => {
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/package-manager.test.ts src/commands/adoption.test.ts
@@ -197,7 +197,7 @@ bun test src/package-manager.test.ts src/commands/adoption.test.ts
 
 Neither module exists.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 `src/package-manager.ts`:
 
@@ -449,13 +449,13 @@ ccgh init
 The spec template must stay free of the placeholder shape the test refuses, which is why its
 headings carry prose and no angle brackets.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
 
 ```bash
 git add src/package-manager.ts src/package-manager.test.ts src/commands/adoption.ts \
