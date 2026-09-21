@@ -1,7 +1,7 @@
 ---
 title: Init and the workflows
 order: 9
-issue: null
+issue: 42
 github:
   state: null
   pr: null

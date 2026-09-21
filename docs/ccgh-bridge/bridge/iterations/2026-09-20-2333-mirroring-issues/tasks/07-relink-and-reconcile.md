@@ -1,7 +1,7 @@
 ---
 title: Relink and reconcile
 order: 7
-issue: null
+issue: 40
 github:
   state: null
   pr: null

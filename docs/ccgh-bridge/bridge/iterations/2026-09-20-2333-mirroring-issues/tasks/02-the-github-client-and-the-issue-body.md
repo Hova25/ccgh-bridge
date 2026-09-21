@@ -1,7 +1,7 @@
 ---
 title: The GitHub client and the issue body
 order: 2
-issue: null
+issue: 35
 github:
   state: null
   pr: null

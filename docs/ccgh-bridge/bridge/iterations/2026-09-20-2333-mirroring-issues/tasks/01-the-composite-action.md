@@ -1,7 +1,7 @@
 ---
 title: The composite action
 order: 1
-issue: null
+issue: 34
 github:
   state: null
   pr: null
