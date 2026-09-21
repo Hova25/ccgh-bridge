@@ -1,8 +1,8 @@
 ---
 title: Make init write the lifecycle rules into CLAUDE.md
-date: 2026-09-21
+date: 2026-09-21T00:00:00.000Z
 issue: null
-pr: null
+pr: 84
 ---
 
 # Make init write the lifecycle rules into CLAUDE.md
