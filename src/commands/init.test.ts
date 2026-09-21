@@ -116,7 +116,8 @@ describe("ccgh init", () => {
   });
 
   it("leaves ccgh.json alone when it has nothing to change there", async () => {
-    const formatted = '{ "check": ["bun run lint"], "action": "Hova25/ccgh-bridge@v1" }\n';
+    const formatted =
+      '{ "check": ["bun run lint"], "language": { "refuse": [] }, "action": "Hova25/ccgh-bridge@v1" }\n';
     await writeFile(join(root, "ccgh.json"), formatted, "utf8");
 
     await run({ argv: [], cwd: root });
@@ -124,6 +125,28 @@ describe("ccgh init", () => {
     // Rewriting a file it did not change reformats it, and a repository whose formatter
     // disagrees then fails its own lint for no reason.
     expect(await readFile(join(root, "ccgh.json"), "utf8")).toBe(formatted);
+  });
+
+  it("writes an empty refused language when ccgh.json names none", async () => {
+    await run({ argv: [], cwd: root });
+
+    expect(JSON.parse(await readFile(join(root, "ccgh.json"), "utf8")).language).toEqual({
+      refuse: [],
+    });
+  });
+
+  it("keeps the refused language a repository chose", async () => {
+    await writeFile(
+      join(root, "ccgh.json"),
+      '{ "language": { "refuse": ["dies", "ist"] } }',
+      "utf8",
+    );
+
+    await run({ argv: [], cwd: root });
+
+    expect(JSON.parse(await readFile(join(root, "ccgh.json"), "utf8")).language).toEqual({
+      refuse: ["dies", "ist"],
+    });
   });
 });
 
