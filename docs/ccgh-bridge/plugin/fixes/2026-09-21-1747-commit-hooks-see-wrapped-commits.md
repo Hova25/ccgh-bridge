@@ -1,8 +1,8 @@
 ---
 title: See a commit behind a wrapper or on a line of its own
 date: 2026-09-21
-issue: null
-pr: null
+issue: 103
+pr: 102
 ---
 
 # See a commit behind a wrapper or on a line of its own
