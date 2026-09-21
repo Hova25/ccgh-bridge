@@ -1,7 +1,7 @@
 ---
 title: Init adopts a repository
 order: 4
-issue: null
+issue: 120
 github:
   state: null
   pr: null

@@ -1,7 +1,7 @@
 ---
 title: The domain scaffold
 order: 2
-issue: null
+issue: 118
 github:
   state: null
   pr: null
