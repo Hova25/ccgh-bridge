@@ -80,6 +80,15 @@ describe("require-decision-notice", () => {
     ).toMatch(/test/);
   });
 
+  it("asks before PowerShell deletes a test file", () => {
+    expect(
+      decide({
+        context: fake({}),
+        input: { tool_name: "PowerShell", tool_input: { command: "Remove-Item src\\a.test.ts" } },
+      }),
+    ).toMatch(/test/);
+  });
+
   it("stays silent when a test is added", () => {
     expect(
       decide({

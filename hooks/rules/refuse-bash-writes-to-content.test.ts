@@ -29,6 +29,17 @@ describe("refuse-bash-writes-to-content", () => {
     expect(run(`cp /tmp/a.md ${content}/harness/fixes/2026-09-14-a.md`)).toMatch(/cp or mv/);
   });
 
+  it("refuses PowerShell cmdlets writing into the content tree", () => {
+    expect(run(`Set-Content -Path ${content}/harness/index.md -Value x`)).toMatch(/PowerShell/);
+    expect(run(`"x" | Out-File docs\\ccgh-bridge\\harness\\index.md`)).toMatch(/PowerShell/);
+    expect(run(`Copy-Item C:\\tmp\\a.md docs\\ccgh-bridge\\harness\\a.md`)).toMatch(/PowerShell/);
+    expect(run(`"x" > docs\\ccgh-bridge\\harness\\index.md`)).toMatch(/redirection/);
+  });
+
+  it("allows PowerShell reading a content file", () => {
+    expect(run(`Get-Content docs\\ccgh-bridge\\harness\\index.md -TotalCount 5`)).toBeNull();
+  });
+
   it("allows reading a content file", () => {
     expect(run(`grep -i status ${content}/harness/index.md`)).toBeNull();
     expect(run(`cat ${content}/harness/index.md | head -5`)).toBeNull();

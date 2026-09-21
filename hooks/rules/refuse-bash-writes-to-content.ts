@@ -3,7 +3,8 @@ import type { Decide } from "../context";
 const escaped = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export const decide: Decide = ({ input, context }) => {
-  const command = input?.tool_input?.command ?? "";
+  // PowerShell spells paths with backslashes, and the content root is matched with slashes.
+  const command = (input?.tool_input?.command ?? "").replaceAll("\\", "/");
   const target = `[^\\s"'|;&>]*${escaped(`${context.content()}/`)}`;
   const writes = [
     { name: "a redirection", pattern: new RegExp(`>>?\\s*["']?${target}`) },
@@ -13,6 +14,13 @@ export const decide: Decide = ({ input, context }) => {
       pattern: new RegExp(`\\b(?:sed|perl)\\b[^|;&]*-i[^|;&]*${target}`),
     },
     { name: "cp or mv", pattern: new RegExp(`\\b(?:cp|mv)\\s[^|;&]*${target}`) },
+    {
+      name: "a PowerShell cmdlet",
+      pattern: new RegExp(
+        `\\b(?:set-content|add-content|out-file|new-item|copy-item|move-item|copy|move|sc|ac|ni|cpi|mi)\\s[^|;&]*${target}`,
+        "i",
+      ),
+    },
   ];
   const found = writes.find(({ pattern }) => pattern.test(command));
 
