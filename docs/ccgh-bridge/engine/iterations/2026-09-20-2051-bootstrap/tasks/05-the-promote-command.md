@@ -1,7 +1,7 @@
 ---
 title: The promote command
 order: 5
-issue: null
+issue: 62
 github:
   state: null
   pr: null

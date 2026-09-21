@@ -1,7 +1,7 @@
 ---
 title: Repository and project resolution
 order: 1
-issue: null
+issue: 58
 github:
   state: null
   pr: null

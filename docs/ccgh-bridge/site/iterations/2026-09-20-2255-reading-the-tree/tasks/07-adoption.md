@@ -1,7 +1,7 @@
 ---
 title: Adoption
 order: 7
-issue: null
+issue: 57
 github:
   state: null
   pr: null
@@ -30,7 +30,7 @@ the workflow real.
 - Consumes: everything tasks 1 to 6 produced.
 - Produces: nothing new. The iteration ends here.
 
-- [x] **Write the failing test**
+- [ ] **Write the failing test**
 
 The assertion that would have caught this iteration's own starting condition:
 
@@ -53,13 +53,13 @@ two say the workflows arrive through it rather than that it does not exist, whic
 statement about where something comes from rather than a promise; if that distinction ever
 stops holding, this test says so.
 
-- [x] **Run it to verify it fails**
+- [ ] **Run it to verify it fails**
 
 ```bash
 bun test tests/plugin.test.ts
 ```
 
-- [x] **Write the implementation**
+- [ ] **Write the implementation**
 
 `open-iteration` step 8 becomes the command and what it shows:
 
@@ -75,7 +75,7 @@ rather than only the reference, because reading it on the site is what step 8 is
 The README's status section stops saying the site is not built, and gains `ccgh docs` and
 `ccgh docs --build` beside the commands it already lists.
 
-- [x] **Run the tests to verify they pass**
+- [ ] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -92,4 +92,4 @@ Ask for `/ccgh:open-iteration` to be read. It names `ccgh docs`, the command exi
 running it serves this repository's own tree — three domains, four iterations, the board and
 the search. The workflow can be written and read.
 
-- [x] **Commit**
+- [ ] **Commit**

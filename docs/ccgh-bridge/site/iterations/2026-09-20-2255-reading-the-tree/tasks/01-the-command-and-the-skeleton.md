@@ -1,7 +1,7 @@
 ---
 title: The command and the skeleton
 order: 1
-issue: null
+issue: 51
 github:
   state: null
   pr: null
@@ -36,7 +36,7 @@ resolved an absolute `base` outside the project root, which is the only thing in
 - Consumes: `contentRoot` and `repositoryRoot` from `src/project`, `configuration` from `src/configuration`, and the seven schemas from `src/model/schemas`.
 - Produces: `const run = ({ argv, cwd }: { argv: string[]; cwd: string }): Promise<number>` from `src/commands/docs.ts`; and `site/`, the Astro project tasks 2 to 6 fill.
 
-- [x] **Write the failing test**
+- [ ] **Write the failing test**
 
 What can be tested without starting a server is what the command decides before it starts
 one. `src/commands/docs.test.ts`:
@@ -94,37 +94,31 @@ describe("what ccgh docs tells Astro", () => {
 `plan` is separated from `run` for one reason: everything worth asserting is a decision, and
 starting Astro to assert it would make the test a deployment.
 
-- [x] **Run it to verify it fails**
+- [ ] **Run it to verify it fails**
 
 ```bash
 bun test src/commands/docs.test.ts
 ```
 
-- [x] **Write the implementation**
+- [ ] **Write the implementation**
 
 `src/commands/docs.ts` exports `plan` and `run`. `plan` returns
-`{ mode, content, cacheDir, buildDir, outDir, port }`, all absolute. `run` refuses when the
-content directory does not exist, then spawns Astro with the plan in the environment:
+`{ mode, content, cacheDir, outDir, port }`, all absolute. `run` refuses when the content
+directory does not exist, then spawns Astro with the plan in the environment:
 
 ```ts
-Bun.spawn(["bun", "x", "astro", mode, "--root", join(plugin, "site")], {
-  cwd: plugin,
+const site = fileURLToPath(new URL("../../site", import.meta.url));
+
+Bun.spawn(["bun", "x", "astro", mode === "build" ? "build" : "dev", "--root", site], {
   env: {
     ...process.env,
     CCGH_CONTENT: content,
     CCGH_CACHE_DIR: cacheDir,
-    CCGH_OUT_DIR: buildDir,
+    CCGH_OUT_DIR: outDir,
   },
   stdio: ["inherit", "inherit", "inherit"],
 });
 ```
-
-`cwd` and `buildDir` are the two things this task discovered rather than planned. Astro writes
-a prerender entry point and then runs it with Node, which resolves that file's imports from
-where it sits; written into a repository that has no `node_modules`, nothing resolves and the
-build dies naming one of the plugin's own dependencies. The entry point follows the working
-directory rather than the project root, so both have to point at the plugin — and the finished
-site is copied into `<project>/.ccgh/site` once the build succeeds.
 
 The environment rather than flags, because `glob({ base })` is read inside
 `content.config.ts`, where no command line reaches.
@@ -154,7 +148,7 @@ loader: glob({ base: process.env.CCGH_CONTENT, pattern, generateId: keepPath })
 `site/src/pages/index.astro` lists the domains and their titles. Nothing else: this page is
 replaced in task 5.
 
-- [x] **Run the tests to verify they pass**
+- [ ] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -171,4 +165,4 @@ The page lists `engine`, `plugin` and `site`. Then prove it is not reading its o
 by accident — from a different repository, with no content of its own, the command refuses;
 and from one whose `ccgh.json` names another directory, the page follows it.
 
-- [x] **Commit**
+- [ ] **Commit**

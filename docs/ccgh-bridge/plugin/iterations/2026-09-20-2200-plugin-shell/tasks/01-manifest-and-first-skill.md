@@ -1,7 +1,7 @@
 ---
 title: Manifest and first skill
 order: 1
-issue: null
+issue: 45
 github:
   state: null
   pr: null
@@ -32,7 +32,7 @@ has.
 - Consumes: nothing.
 - Produces: the plugin namespace `ccgh`, so every skill answers as `/ccgh:<name>`; and `tests/plugin.test.ts`, which tasks 2 to 6 extend rather than replace.
 
-- [x] **Write the failing test**
+- [ ] **Write the failing test**
 
 `tests/plugin.test.ts`:
 
@@ -94,13 +94,13 @@ The last assertion is the one that matters. It fails for every skill still carry
 origin, and it is what makes task 2 a mechanical job with a verdict rather than a reading
 exercise.
 
-- [x] **Run it to verify it fails**
+- [ ] **Run it to verify it fails**
 
 ```bash
 bun test tests/plugin.test.ts
 ```
 
-- [x] **Write the implementation**
+- [ ] **Write the implementation**
 
 `.claude-plugin/plugin.json`:
 
@@ -122,7 +122,7 @@ a skill that repeats the path is a second place for the convention to be wrong.
 `tsconfig.json` gains `hooks` and `tests` in `include`, so `bun run typecheck` covers them
 from here on.
 
-- [x] **Run the tests to verify they pass**
+- [ ] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -139,4 +139,4 @@ In that session, `/ccgh:write-spec` answers and `/help` lists it under the `ccgh
 A skill that does not appear means the directory is inside `.claude-plugin/` rather than
 beside it.
 
-- [x] **Commit**
+- [ ] **Commit**

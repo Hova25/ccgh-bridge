@@ -173,4 +173,39 @@ describe("commitToIterationBranch against a moved main", () => {
     expect(result).toEqual({ branch: "bot/ship/harness/2026-09-13-x", committed: true });
     expect(commands.join("\n")).not.toMatch(/git fetch origin harness\/2026-09-13-x$/m);
   });
+
+  it("leaves the clone standing where it found it", async () => {
+    root = mkdtempSync(join(tmpdir(), "bridge-standing-"));
+    const origin = join(root, "origin");
+    const clone = join(root, "clone");
+
+    git(root)("init", "-q", "--bare", origin);
+    git(root)("clone", "-q", origin, clone);
+    identity(clone);
+
+    write({ cwd: clone, content: "state: open\n" });
+    git(clone)("add", ".");
+    git(clone)("commit", "-qm", "base");
+    git(clone)("branch", "-M", "main");
+    git(clone)("branch", "harness/2026-09-13-x");
+    git(clone)("push", "-q", "origin", "main", "harness/2026-09-13-x");
+
+    // Someone is working on a branch of their own when the bridge runs.
+    git(clone)("switch", "-qc", "working");
+
+    await commitToIterationBranch({
+      reference: "harness/2026-09-13-x",
+      message: "Mirror 1 task(s)",
+      run: shellIn(clone),
+      apply: async () => {
+        write({ cwd: clone, content: "state: closed\n" });
+
+        return [TASK];
+      },
+    });
+
+    // On a runner the checkout is throwaway; in a working clone, being left detached strands
+    // whatever the person was doing.
+    expect(git(clone)("rev-parse", "--abbrev-ref", "HEAD")).toBe("working");
+  });
 });

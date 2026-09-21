@@ -1,7 +1,7 @@
 ---
 title: The remaining skills
 order: 2
-issue: null
+issue: 46
 github:
   state: null
   pr: null
@@ -30,7 +30,7 @@ repeats the content directory is a second place for the convention to be wrong.
 - Consumes: `tests/plugin.test.ts` and the manifest from task 1.
 - Produces: the eight skills, answering as `/ccgh:<name>`. Tasks 3 to 6 do not depend on them; task 6 uses them as its proof.
 
-- [x] **Write the failing test**
+- [ ] **Write the failing test**
 
 Add to `tests/plugin.test.ts`, inside `describe("every skill")`:
 
@@ -49,7 +49,7 @@ Add to `tests/plugin.test.ts`, inside `describe("every skill")`:
   });
 ```
 
-- [x] **Run it to verify it fails**
+- [ ] **Run it to verify it fails**
 
 ```bash
 bun test tests/plugin.test.ts
@@ -58,7 +58,7 @@ bun test tests/plugin.test.ts
 It fails on the set, and it will fail again on the `pnpm --filter` assertion as each skill
 lands until its call sites are rewritten.
 
-- [x] **Write the implementation**
+- [ ] **Write the implementation**
 
 Copy each skill from the origin and apply the substitutions:
 
@@ -83,7 +83,7 @@ the iteration that adds it.
 
 Nothing else changes. A skill rewritten while being moved is a skill nobody reviewed.
 
-- [x] **Run the tests to verify they pass**
+- [ ] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -98,4 +98,4 @@ claude --plugin-dir .
 `/help` lists eight under `ccgh`. `/ccgh:open-iteration` and `/ccgh:ship-iteration` name only
 commands that exist, or say which do not.
 
-- [x] **Commit**
+- [ ] **Commit**
