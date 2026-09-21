@@ -3,10 +3,10 @@ title: Configuration for language and checks
 order: 5
 issue: 49
 github:
-  state: null
+  state: closed
   pr: null
   merged_at: null
-  synced_at: null
+  synced_at: '2026-09-21T00:10:47.258Z'
 ---
 
 # Configuration for language and checks

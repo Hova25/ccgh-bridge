@@ -3,10 +3,10 @@ title: Adoption
 order: 6
 issue: 50
 github:
-  state: null
+  state: closed
   pr: null
   merged_at: null
-  synced_at: null
+  synced_at: '2026-09-21T00:10:47.258Z'
 ---
 
 # Adoption
