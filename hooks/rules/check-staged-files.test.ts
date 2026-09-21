@@ -65,6 +65,17 @@ describe("check-staged-files", () => {
     expect(decision).toMatch(/b\.mjs:4/);
   });
 
+  it("checks every JavaScript and TypeScript flavour, React components included", () => {
+    for (const file of ["a.tsx", "a.jsx", "a.js", "a.cjs", "a.cts", "a.vue", "a.svelte"]) {
+      const decision = decide({
+        input: commit,
+        context: context({ files: [file], failures: `${file}:1 failed` }),
+      });
+
+      expect(decision, file).toContain(`${file}:1 failed`);
+    }
+  });
+
   it("is inert when the repository configures no check", () => {
     const decision = decide({
       input: commit,
