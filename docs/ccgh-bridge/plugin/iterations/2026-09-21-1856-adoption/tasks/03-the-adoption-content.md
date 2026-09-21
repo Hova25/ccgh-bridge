@@ -4,9 +4,9 @@ order: 3
 issue: 119
 github:
   state: open
-  pr: null
-  merged_at: null
-  synced_at: '2026-09-21T20:16:01.310Z'
+  pr: 124
+  merged_at: '2026-09-21T20:24:56Z'
+  synced_at: '2026-09-21T20:37:26.355Z'
 ---
 
 # The adoption content
