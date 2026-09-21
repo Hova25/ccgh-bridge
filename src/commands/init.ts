@@ -3,6 +3,7 @@ import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { configuration } from "../configuration";
+import { packageManagerOf } from "../package-manager";
 import { contentRoot, repositoryRoot } from "../project";
 
 // Ownership is a line rather than a manifest: a manifest is one more file to go stale, and a
@@ -90,12 +91,13 @@ const declaresPackageManager = ({ repository }: { repository: string }): boolean
 // the frozen lockfile or resolves different versions than the ones the repository tested.
 const installSteps = ({ repository }: { repository: string }): string[][] => {
   const has = (name: string) => existsSync(join(repository, name));
+  const manager = packageManagerOf({ repository });
 
-  if (has("bun.lock") || has("bun.lockb")) {
+  if (manager === "bun") {
     return [["      - uses: oven-sh/setup-bun@v2"], ["      - run: bun install --frozen-lockfile"]];
   }
 
-  if (has("pnpm-lock.yaml")) {
+  if (manager === "pnpm") {
     // pnpm/action-setup refuses to guess a version unless package.json declares one.
     const version = declaresPackageManager({ repository })
       ? []
@@ -110,7 +112,7 @@ const installSteps = ({ repository }: { repository: string }): string[][] => {
 
   // Yarn 2 and later is fetched by corepack, and the cache option would ask Yarn 1 for its
   // cache directory before corepack has replaced it.
-  if (has("yarn.lock") && has(".yarnrc.yml")) {
+  if (manager === "yarn" && has(".yarnrc.yml")) {
     return [
       setupNode({ repository }),
       ["      - run: corepack enable"],
@@ -118,18 +120,18 @@ const installSteps = ({ repository }: { repository: string }): string[][] => {
     ];
   }
 
-  if (has("yarn.lock")) {
+  if (manager === "yarn") {
     return [
       setupNode({ repository, cache: "yarn" }),
       ["      - run: yarn install --frozen-lockfile"],
     ];
   }
 
-  if (has("package-lock.json") || has("npm-shrinkwrap.json")) {
+  if (manager === "npm" && (has("package-lock.json") || has("npm-shrinkwrap.json"))) {
     return [setupNode({ repository, cache: "npm" }), ["      - run: npm ci"]];
   }
 
-  if (has("package.json")) return [setupNode({ repository }), ["      - run: npm install"]];
+  if (manager === "npm") return [setupNode({ repository }), ["      - run: npm install"]];
 
   return [];
 };
