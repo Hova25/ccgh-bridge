@@ -3,10 +3,10 @@ title: The domain scaffold
 order: 2
 issue: 118
 github:
-  state: null
+  state: open
   pr: null
   merged_at: null
-  synced_at: null
+  synced_at: '2026-09-21T20:16:01.311Z'
 ---
 
 # The domain scaffold
