@@ -1,8 +1,8 @@
 ---
 title: Apply the command hooks to the PowerShell tool
 date: 2026-09-21
-issue: null
-pr: null
+issue: 99
+pr: 98
 ---
 
 # Apply the command hooks to the PowerShell tool
