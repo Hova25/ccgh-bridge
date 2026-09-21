@@ -1,8 +1,8 @@
 ---
 title: Ask before harness edits whose path arrives absolute
 date: 2026-09-21
-issue: null
-pr: null
+issue: 95
+pr: 94
 ---
 
 # Ask before harness edits whose path arrives absolute
