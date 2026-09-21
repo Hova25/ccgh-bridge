@@ -1,8 +1,8 @@
 ---
-title: Check every script file, and refuse a check that cannot run
+title: 'Check every script file, and refuse a check that cannot run'
 date: 2026-09-21
-issue: null
-pr: null
+issue: 115
+pr: 114
 ---
 
 # Check every script file, and refuse a check that cannot run
