@@ -112,6 +112,13 @@ Writes `<content>/<name>/index.md` with a `title` derived from the name and a `s
 be completed, prints the path, and refuses a name that is not a slug or a domain that exists.
 It creates the content directory when it is missing.
 
+`ccgh scaffold iteration <domain>/<slug> --at <yyyy-mm-dd-HHMM>` uses the given prefix instead
+of reading the clock, and refuses a prefix of another shape or an iteration that already
+exists. The skill `open-iteration` scaffolded in the clone before its worktree existed, because
+the reference is only known once the prefix is; it now reads the prefix with
+`date -u +%Y-%m-%d-%H%M`, creates the worktree, and scaffolds inside it with `--at`, so that a
+new domain and the iteration land in the same branch.
+
 ### Classification after adoption
 
 The `CLAUDE.md` block and the skills `open-fix` and `open-iteration` say:
