@@ -1,8 +1,8 @@
 ---
 title: Judge a commit by the directory it runs in
 date: 2026-09-21
-issue: null
-pr: null
+issue: 97
+pr: 96
 ---
 
 # Judge a commit by the directory it runs in
