@@ -1,12 +1,13 @@
 import { existsSync } from "node:fs";
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { SLUG } from "../model/schemas";
+import { DATED_PREFIX, SLUG } from "../model/schemas";
 import { contentRoot } from "../project";
 
 export type Scaffold = { file: string; content: string };
 
 const slugPattern = new RegExp(`^${SLUG}$`);
+const prefixPattern = new RegExp(`^${DATED_PREFIX}$`);
 
 export const prefixAt = ({ now }: { now: Date }): string => {
   const iso = now.toISOString();
@@ -43,23 +44,55 @@ export const iterationName = ({
   return `${first}-${suffix}`;
 };
 
+export const domainScaffold = ({
+  domain,
+}: {
+  domain: string;
+}): { reference: string; files: Scaffold[] } => {
+  if (!slugPattern.test(domain)) throw new Error(`domain must be a slug, got ${domain}`);
+
+  const title = titleFrom(domain);
+
+  return {
+    reference: domain,
+    files: [
+      {
+        file: `${domain}/index.md`,
+        content:
+          frontMatter([
+            `title: ${title}`,
+            "summary: <One sentence naming what this domain owns, read on the site's front page.>",
+          ]) +
+          [
+            "",
+            "<What this domain covers and where its code lives, so that the next change can tell",
+            "whether it belongs here.>",
+            "",
+          ].join("\n"),
+      },
+    ],
+  };
+};
+
 export const iterationScaffold = ({
   domain,
   slug,
   now,
+  prefix,
   taken = [],
   author,
 }: {
   domain: string;
   slug: string;
   now: Date;
+  prefix?: string;
   taken?: string[];
   author: string;
 }): { reference: string; files: Scaffold[] } => {
   if (!slugPattern.test(domain)) throw new Error(`domain must be a slug, got ${domain}`);
   if (!slugPattern.test(slug)) throw new Error(`slug must be a slug, got ${slug}`);
 
-  const iteration = iterationName({ slug, prefix: prefixAt({ now }), taken });
+  const iteration = iterationName({ slug, prefix: prefix ?? prefixAt({ now }), taken });
   const directory = `${domain}/iterations/${iteration}`;
   const title = titleFrom(slug);
 
@@ -283,17 +316,40 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
   const root = contentRoot({ from: cwd });
   const [kind, target, slug] = argv;
   const now = new Date();
+  const at = argv.includes("--at") ? argv[argv.indexOf("--at") + 1] : undefined;
 
   try {
+    if (argv.includes("--at") && (at === undefined || !prefixPattern.test(at))) {
+      throw new Error(`--at takes a prefix shaped yyyy-mm-dd-HHMM, got ${at ?? "nothing"}`);
+    }
+
     if (kind === "iteration" && target) {
       const [domain = "", name = ""] = target.split("/");
+      const taken = await existingIterations({ root, domain });
+
+      // A prefix given by the caller names a worktree that already exists: suffixing it would
+      // write an iteration the branch does not name.
+      if (at !== undefined && taken.includes(`${at}-${name}`)) {
+        throw new Error(`${domain}/${at}-${name} already exists; refusing to overwrite it`);
+      }
+
       const plan = iterationScaffold({
         domain,
         slug: name,
         now,
-        taken: await existingIterations({ root, domain }),
+        prefix: at,
+        taken,
         author: process.env.USER ?? "unknown",
       });
+
+      await write({ root, files: plan.files });
+      process.stdout.write(`\n${plan.reference}\n`);
+
+      return 0;
+    }
+
+    if (kind === "domain" && target) {
+      const plan = domainScaffold({ domain: target });
 
       await write({ root, files: plan.files });
       process.stdout.write(`\n${plan.reference}\n`);
@@ -327,7 +383,8 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
   process.stderr.write(
     [
       "usage:",
-      "  ccgh scaffold iteration <domain>/<slug>",
+      "  ccgh scaffold domain <name>",
+      "  ccgh scaffold iteration <domain>/<slug> [--at yyyy-mm-dd-HHMM]",
       "  ccgh scaffold fix <domain>/<slug>",
       "  ccgh scaffold task <domain>/<iteration> <slug>",
       "",
