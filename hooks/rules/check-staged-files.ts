@@ -1,7 +1,7 @@
 import { commitCommand } from "../commit";
 import type { Decide } from "../context";
 
-const checkable = /\.(ts|mts|mjs|astro)$/;
+const checkable = /\.(?:[cm]?[jt]sx?|astro|vue|svelte)$/;
 
 export const decide: Decide = ({ input, context }) => {
   const command = input?.tool_input?.command ?? "";
