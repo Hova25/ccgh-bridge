@@ -1,8 +1,8 @@
 ---
 title: Tag and publish a release when the manifest's version changes
 date: 2026-09-21
-issue: null
-pr: null
+issue: 113
+pr: 112
 ---
 
 # Tag and publish a release when the manifest's version changes
