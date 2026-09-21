@@ -1,12 +1,21 @@
 ---
 title: The path a consumer takes
-status: ready
+status: active
 depends_on: []
 impacts:
   - site
   - bridge
 validated_by: hovannes
 validated_at: '2026-09-21T00:31:21.036Z'
+launched_by: hovannes
+launched_at: '2026-09-21T00:48:54.306Z'
+launched_tasks:
+  - tasks/01-version-and-the-tag.md
+  - tasks/02-the-pages-workflow.md
+  - tasks/03-the-sandbox-installs-it.md
+  - tasks/04-one-iteration-in-the-sandbox.md
+  - tasks/05-what-the-sandbox-revealed.md
+  - tasks/06-the-record.md
 ---
 
 # The path a consumer takes
