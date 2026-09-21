@@ -1,6 +1,6 @@
 ---
 title: Reading the tree
-status: active
+status: shipped
 depends_on: []
 impacts:
   - plugin

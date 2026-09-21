@@ -3,10 +3,10 @@ title: The styles
 order: 3
 issue: 53
 github:
-  state: null
+  state: closed
   pr: null
   merged_at: null
-  synced_at: null
+  synced_at: '2026-09-21T00:10:55.439Z'
 ---
 
 # The styles
