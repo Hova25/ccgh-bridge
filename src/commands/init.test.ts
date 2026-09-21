@@ -73,4 +73,37 @@ describe("ccgh init", () => {
       expect(written.startsWith("# written by ccgh init"), name).toBe(true);
     }
   });
+
+  it("writes no pages workflow for a repository that has not said where it publishes", async () => {
+    await run({ argv: [], cwd: root });
+
+    expect(await readdir(join(root, workflows))).not.toContain("ccgh-pages.yml");
+  });
+
+  it("writes one when it has", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "site": "https://x.github.io/repo" }', "utf8");
+
+    await run({ argv: [], cwd: root });
+
+    expect(await readdir(join(root, workflows))).toContain("ccgh-pages.yml");
+  });
+
+  it("removes it again when the key goes away, rather than leaving a job that can only fail", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "site": "https://x.github.io/repo" }', "utf8");
+    await run({ argv: [], cwd: root });
+
+    await writeFile(join(root, "ccgh.json"), "{}", "utf8");
+    await run({ argv: [], cwd: root });
+
+    expect(await readdir(join(root, workflows))).not.toContain("ccgh-pages.yml");
+  });
+
+  it("leaves a pages workflow it did not write, even when the key is gone", async () => {
+    await mkdir(join(root, workflows), { recursive: true });
+    await writeFile(join(root, workflows, "ccgh-pages.yml"), "name: mine\n", "utf8");
+
+    await run({ argv: [], cwd: root });
+
+    expect(await readFile(join(root, workflows, "ccgh-pages.yml"), "utf8")).toBe("name: mine\n");
+  });
 });
