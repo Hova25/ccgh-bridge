@@ -4,9 +4,9 @@ order: 1
 issue: 117
 github:
   state: open
-  pr: null
-  merged_at: null
-  synced_at: '2026-09-21T20:16:01.311Z'
+  pr: 122
+  merged_at: '2026-09-21T20:15:44Z'
+  synced_at: '2026-09-21T20:37:10.409Z'
 ---
 
 # No refused language by default
