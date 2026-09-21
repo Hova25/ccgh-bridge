@@ -1,8 +1,8 @@
 ---
 title: Install with the package manager the lockfile names
 date: 2026-09-21
-issue: null
-pr: null
+issue: 105
+pr: 104
 ---
 
 # Install with the package manager the lockfile names
