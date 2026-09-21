@@ -19,8 +19,13 @@ const invoke = async ({ rule, input }: { rule: string; input: unknown }) => {
 describe("the hook entry point", () => {
   it("refuses with exit 2 and says why", async () => {
     const { code, stderr } = await invoke({
-      rule: "enforce-language",
-      input: { tool_input: { file_path: "a.md", content: "Ceci est une phrase avec des mots." } },
+      rule: "protect-generated-frontmatter",
+      input: {
+        tool_input: {
+          file_path: "docs/ccgh-bridge/engine/fixes/a.md",
+          content: "---\nissue: 3\n---\n",
+        },
+      },
     });
 
     expect(code).toBe(2);

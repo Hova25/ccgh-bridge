@@ -67,8 +67,9 @@ carries is run by Bun.
 
 `content` names the content directory. `check` names the commands the commit hook runs on
 staged files; with none, it runs nothing rather than somebody else's checks. `language.refuse`
-is the word list the prose hook refuses — it ships with a list of French words, which is what
-the repository this grew in needed, so a repository that writes French silences it here.
+is the word list the prose hook refuses in comments, prose and commit messages. Nothing is
+refused unless it is listed; `ccgh init` writes the empty list when the key is missing, so that
+the file shows the setting the repository runs with.
 
 `title` names the site, which is otherwise the repository's directory. `repository` is where
 its issues live, so that an issue number becomes a link; without it the number is printed

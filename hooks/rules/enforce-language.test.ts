@@ -10,6 +10,43 @@ const commit = (message: string) => {
   return { tool_name: "Bash", tool_input: { command: `git commit -m "${message}"` } };
 };
 
+// The list the rule carried before it stopped refusing anything by default, kept here so that
+// the cases that refuse French still say which words they refuse.
+const french = {
+  language: {
+    refuse: [
+      "alors",
+      "aussi",
+      "avec",
+      "cette",
+      "dans",
+      "des",
+      "donc",
+      "elle",
+      "est",
+      "etre",
+      "fait",
+      "jamais",
+      "leur",
+      "mais",
+      "nous",
+      "pas",
+      "pour",
+      "quand",
+      "que",
+      "qui",
+      "sans",
+      "sont",
+      "sur",
+      "toujours",
+      "tous",
+      "tout",
+      "une",
+      "vous",
+    ],
+  },
+};
+
 describe("enforce-language", () => {
   it("accepts English prose", () => {
     expect(
@@ -23,7 +60,7 @@ describe("enforce-language", () => {
   it("accepts a single ambiguous word", () => {
     expect(
       decide({
-        context: fake({ configuration: () => ({}) }),
+        context: fake({ configuration: () => french }),
         input: write("const note = frequencyOf('sur');"),
       }),
     ).toBeNull();
@@ -32,7 +69,7 @@ describe("enforce-language", () => {
   it("refuses a French comment", () => {
     expect(
       decide({
-        context: fake({ configuration: () => ({}) }),
+        context: fake({ configuration: () => french }),
         input: write("// la session est fermee quand tous les jetons expirent"),
       }),
     ).toMatch(/est, quand, tous/);
@@ -41,7 +78,7 @@ describe("enforce-language", () => {
   it("refuses a French test name", () => {
     expect(
       decide({
-        context: fake({ configuration: () => ({}) }),
+        context: fake({ configuration: () => french }),
         input: write('it("retourne une erreur pour tous les identifiants", () => {});'),
       }),
     ).not.toBeNull();
@@ -50,7 +87,7 @@ describe("enforce-language", () => {
   it("refuses a French commit message", () => {
     expect(
       decide({
-        context: fake({ configuration: () => ({}) }),
+        context: fake({ configuration: () => french }),
         input: commit("corrige le bug dans une validation sans schema"),
       }),
     ).not.toBeNull();
@@ -59,10 +96,19 @@ describe("enforce-language", () => {
   it("names the words it found", () => {
     expect(
       decide({
-        context: fake({ configuration: () => ({}) }),
+        context: fake({ configuration: () => french }),
         input: write("// pour une session dans le cache"),
       }),
     ).toMatch(/pour/);
+  });
+
+  it("refuses nothing when the repository lists nothing", () => {
+    expect(
+      decide({
+        context: fake({ configuration: () => ({}) }),
+        input: write("// la session est fermee quand tous les jetons expirent"),
+      }),
+    ).toBeNull();
   });
 
   it("is silent when the repository configures an empty list", () => {
