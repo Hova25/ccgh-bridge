@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { issueUrl, run, settingsFor } from "./bridge";
+import { filesArriving, issueUrl, run, settingsFor } from "./bridge";
 
 let root = "";
 
@@ -78,5 +78,34 @@ describe("ccgh bridge", () => {
         env: { GITHUB_TOKEN: "x", GITHUB_REPOSITORY: "o/r" },
       }),
     ).toBe(1);
+  });
+});
+
+describe("the files a fix pull request brings", () => {
+  it("are the ones the workflow named, when it named any", () => {
+    const files = filesArriving({
+      declared: "docs/a.md docs/b.md",
+      run: () => {
+        throw new Error("git should not be asked");
+      },
+    });
+
+    expect(files).toEqual(["docs/a.md", "docs/b.md"]);
+  });
+
+  // No generated workflow has ever set BRIDGE_ARRIVING, so without this every fix pull
+  // request brought nothing, and no fix ever had its issue.
+  it("are what the branch changed since main, when the workflow named none", () => {
+    const asked: string[][] = [];
+    const files = filesArriving({
+      declared: undefined,
+      run: ({ command, args }) => {
+        asked.push([command, ...args]);
+        return "docs/ccgh-bridge/engine/fixes/2026-09-21-1200-a.md\nsrc/a.ts";
+      },
+    });
+
+    expect(asked).toEqual([["git", "diff", "--name-only", "origin/main...HEAD"]]);
+    expect(files).toEqual(["docs/ccgh-bridge/engine/fixes/2026-09-21-1200-a.md", "src/a.ts"]);
   });
 });

@@ -21,9 +21,25 @@ const edit = async ({
   const parsed = matter(await readFile(path, "utf8"));
   const data = { ...parsed.data };
 
+  // YAML reads `date: 2026-09-21` as a Date, and writing it back would turn the day a record
+  // was written into a timestamp at midnight. Such keys go back out as the day they were.
+  const days = Object.keys(data).filter((key) => {
+    const value = data[key];
+
+    return value instanceof Date && value.toISOString().endsWith("T00:00:00.000Z");
+  });
+
+  for (const key of days) data[key] = (data[key] as Date).toISOString().slice(0, 10);
+
   change(data);
 
-  await writeFile(path, matter.stringify(parsed.content, data), "utf8");
+  let written = matter.stringify(parsed.content, data);
+
+  for (const key of days) {
+    written = written.replace(new RegExp(`^${key}: '(\\d{4}-\\d{2}-\\d{2})'$`, "m"), `${key}: $1`);
+  }
+
+  await writeFile(path, written, "utf8");
 };
 
 export const writeIssueNumbers = async ({

@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import matter from "gray-matter";
-import { markShipped, writeIssueNumbers, writeMirror } from "./mirror";
+import { markShipped, writeIssueNumbers, writeMirror, writePullRequest } from "./mirror";
 
 const taskFile = "harness/iterations/2026-09-13-1529-bootstrap/tasks/01-a.md";
 const specFile = "harness/iterations/2026-09-13-1529-bootstrap/spec.md";
@@ -158,5 +158,27 @@ describe("gray-matter caching", () => {
     );
 
     expect(written).toContain("issue: 12");
+  });
+});
+
+describe("a fix record's date", () => {
+  it("stays the day it was written, not a timestamp at midnight", async () => {
+    const root = await mkdtemp(join(tmpdir(), "mirror-date-"));
+    const file = "engine/fixes/2026-09-21-1200-a.md";
+
+    await mkdir(join(root, "engine", "fixes"), { recursive: true });
+    await writeFile(
+      join(root, file),
+      "---\ntitle: A\ndate: 2026-09-21\nissue: null\npr: null\n---\n\n# A\n",
+      "utf8",
+    );
+
+    await writePullRequest({ root, file, pr: 84 });
+
+    const written = await readFile(join(root, file), "utf8");
+
+    expect(written).toContain("pr: 84");
+    expect(written).not.toContain("T00:00:00");
+    expect(matter(written).data.date).toEqual(new Date("2026-09-21"));
   });
 });
