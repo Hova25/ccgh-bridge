@@ -37,7 +37,7 @@ task of their own ahead of the skills that use them.
     exists, rather than suffixing it.
   - Task 5 names both commands in the skills and in the `CLAUDE.md` block.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 In `src/commands/scaffold.test.ts`, import `domainScaffold` and add:
 
@@ -98,7 +98,7 @@ it("refuses a prefix of another shape", async () => {
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/commands/scaffold.test.ts
@@ -106,7 +106,7 @@ bun test src/commands/scaffold.test.ts
 
 `domainScaffold` does not exist, and `run` knows neither `domain` nor `--at`.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 In `src/commands/scaffold.ts`, import `DATED_PREFIX` from `../model/schemas` beside `SLUG`, then
 add:
@@ -200,13 +200,13 @@ The usage text gains `  ccgh scaffold domain <name>` and
 existing file and creates missing directories, which covers both refusals and the missing
 content directory.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
 
 ```bash
 git add src/commands/scaffold.ts src/commands/scaffold.test.ts
