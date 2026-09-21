@@ -1,38 +1,5 @@
 import type { Decide, HookInput } from "../context";
 
-// Only French words, which is what this refuses: the repository it came from was written by a
-// French-speaking team obliged to write in English. It is not a test for English.
-const frenchWords = [
-  "alors",
-  "aussi",
-  "avec",
-  "cette",
-  "dans",
-  "des",
-  "donc",
-  "elle",
-  "est",
-  "etre",
-  "fait",
-  "jamais",
-  "leur",
-  "mais",
-  "nous",
-  "pas",
-  "pour",
-  "quand",
-  "que",
-  "qui",
-  "sans",
-  "sont",
-  "sur",
-  "toujours",
-  "tous",
-  "tout",
-  "une",
-  "vous",
-];
-
 const text = (input: HookInput): string => {
   const { content, new_string: newString, command } = input?.tool_input ?? {};
 
@@ -43,7 +10,8 @@ const text = (input: HookInput): string => {
 };
 
 export const decide: Decide = ({ input, context }) => {
-  const refused = context.configuration().language?.refuse ?? frenchWords;
+  // No default: which language a repository keeps out of its prose is its own decision.
+  const refused = context.configuration().language?.refuse ?? [];
 
   if (refused.length === 0) return null;
 

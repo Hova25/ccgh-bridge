@@ -19,16 +19,7 @@ would need explained — stop and say so. Brainstorm an iteration instead. A fix
 to become the way to avoid writing a specification, and that is the failure this command is
 most likely to cause.
 
-1. Check that the domain exists by listing the content directory — `docs/ccgh-bridge/` unless
-   `ccgh.json` names another one:
-
-   ```bash
-   ls docs/ccgh-bridge
-   ```
-
-   If it is not there, stop and list the ones that are. Never create a domain to hold a fix.
-
-2. Cut the branch from an updated `main`:
+1. Cut the branch from an updated `main`:
 
    ```bash
    git switch main && git pull --ff-only
@@ -40,6 +31,17 @@ most likely to cause.
    same name with the slashes turned into dashes, beside the clone. Everything that follows
    runs inside it, and the clone stays on `main` — an iteration in progress in another
    worktree is not disturbed.
+
+2. Check that the domain exists by listing the content directory — `docs/ccgh-bridge/` unless
+   `ccgh.json` names another one. When it does not, create it here, in the fix's worktree, so
+   that it arrives in the same pull request as the fix:
+
+   ```bash
+   ccgh scaffold domain <domain>
+   ```
+
+   Replace the summary it writes with one sentence naming what the domain owns, and say in
+   your report that the domain is new.
 
 3. Scaffold the record:
 

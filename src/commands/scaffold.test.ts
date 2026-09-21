@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DATED_PREFIX } from "../model/schemas";
 import {
+  domainScaffold,
   fixScaffold,
   iterationName,
   iterationScaffold,
@@ -157,6 +158,25 @@ describe("taskScaffold", () => {
   });
 });
 
+describe("domainScaffold", () => {
+  const plan = domainScaffold({ domain: "listings" });
+
+  it("writes the domain's index, and nothing else", () => {
+    expect(plan.reference).toBe("listings");
+    expect(plan.files.map((file) => file.file)).toEqual(["listings/index.md"]);
+  });
+
+  it("carries the title and the summary the schema demands", () => {
+    const [index] = plan.files;
+
+    expect(index?.content).toMatch(/^---\ntitle: Listings\nsummary: .+\n---\n/);
+  });
+
+  it("refuses a name that is not a slug", () => {
+    expect(() => domainScaffold({ domain: "Listings" })).toThrow(/slug/);
+  });
+});
+
 describe("ccgh scaffold", () => {
   const content = join("docs", "ccgh-bridge");
   let root = "";
@@ -207,6 +227,42 @@ describe("ccgh scaffold", () => {
     const tasks = await readdir(join(root, content, "engine", "iterations", iteration, "tasks"));
 
     expect(tasks.sort()).toEqual(["01-first.md", "02-second.md"]);
+  });
+
+  it("creates a domain, and the content directory when it is missing", async () => {
+    await rm(join(root, content), { recursive: true });
+
+    expect(await run({ argv: ["domain", "listings"], cwd: root })).toBe(0);
+    expect(await readdir(join(root, content))).toEqual(["listings"]);
+  });
+
+  it("refuses a domain that exists", async () => {
+    await run({ argv: ["domain", "listings"], cwd: root });
+
+    expect(await run({ argv: ["domain", "listings"], cwd: root })).toBe(1);
+  });
+
+  it("scaffolds an iteration at the prefix it is given", async () => {
+    const argv = ["iteration", "engine/probe", "--at", "2026-09-14-1703"];
+
+    expect(await run({ argv, cwd: root })).toBe(0);
+    expect(await readdir(join(root, content, "engine", "iterations"))).toEqual([
+      "2026-09-14-1703-probe",
+    ]);
+  });
+
+  it("refuses a prefix it is given when that iteration exists, rather than suffixing it", async () => {
+    const argv = ["iteration", "engine/probe", "--at", "2026-09-14-1703"];
+
+    await run({ argv, cwd: root });
+
+    expect(await run({ argv, cwd: root })).toBe(1);
+  });
+
+  it("refuses a prefix of another shape", async () => {
+    const argv = ["iteration", "engine/probe", "--at", "2026-09-14"];
+
+    expect(await run({ argv, cwd: root })).toBe(1);
   });
 
   it("refuses an unknown kind rather than guessing", async () => {

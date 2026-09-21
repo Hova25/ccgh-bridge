@@ -43,6 +43,14 @@ file is created if there is none, the block is appended to one that exists, and 
 replaces only the block, so the repository's own instructions around it are never touched.
 Without it the hooks refuse mistakes, but nothing tells the session how the work moves.
 
+On a repository that has no content directory yet, `init` adopts it rather than writing into
+the clone. It refuses unless the clone is on `main` with nothing in progress, then creates the
+branch `ccgh/<yyyy-mm-dd-HHMM>-adopt-ccgh` and its worktree in `../worktrees/`, writes there the
+workflows, `ccgh.json`, the `CLAUDE.md` block and a first iteration, `adopt-ccgh`, whose one
+task is choosing the repository's checks, commits it, and names the next command,
+`/ccgh:validate-iteration`. It pushes nothing. On a repository that has adopted ccgh, a re-run
+only rewrites what it owns.
+
 The workflows reach the engine through `uses:`, so the repository clones nothing and installs
 nothing; this repository must be public for that, or the workflow needs a token of its own.
 
@@ -67,8 +75,9 @@ carries is run by Bun.
 
 `content` names the content directory. `check` names the commands the commit hook runs on
 staged files; with none, it runs nothing rather than somebody else's checks. `language.refuse`
-is the word list the prose hook refuses — it ships with a list of French words, which is what
-the repository this grew in needed, so a repository that writes French silences it here.
+is the word list the prose hook refuses in comments, prose and commit messages. Nothing is
+refused unless it is listed; `ccgh init` writes the empty list when the key is missing, so that
+the file shows the setting the repository runs with.
 
 `title` names the site, which is otherwise the repository's directory. `repository` is where
 its issues live, so that an issue number becomes a link; without it the number is printed

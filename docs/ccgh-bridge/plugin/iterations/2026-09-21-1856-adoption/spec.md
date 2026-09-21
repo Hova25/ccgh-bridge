@@ -1,12 +1,20 @@
 ---
 title: Adoption
-status: ready
+status: active
 depends_on: []
 impacts:
   - bridge
   - engine
 validated_by: unknown
 validated_at: '2026-09-21T20:04:35.911Z'
+launched_by: unknown
+launched_at: '2026-09-21T20:09:03.125Z'
+launched_tasks:
+  - tasks/01-no-refused-language-by-default.md
+  - tasks/02-the-domain-scaffold.md
+  - tasks/03-the-adoption-content.md
+  - tasks/04-init-adopts-a-repository.md
+  - tasks/05-classifying-the-work.md
 ---
 
 # Adoption

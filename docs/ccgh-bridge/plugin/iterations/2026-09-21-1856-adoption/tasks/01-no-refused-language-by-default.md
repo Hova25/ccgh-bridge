@@ -1,12 +1,12 @@
 ---
 title: No refused language by default
 order: 1
-issue: null
+issue: 117
 github:
-  state: null
-  pr: null
-  merged_at: null
-  synced_at: null
+  state: open
+  pr: 122
+  merged_at: '2026-09-21T20:15:44Z'
+  synced_at: '2026-09-21T20:37:10.409Z'
 ---
 
 # No refused language by default
@@ -34,7 +34,7 @@ because it changes a default every consumer runs under, independently of adoptio
 - Produces: `ccgh.json` written by `init` always carries a `language` key. Task 4 relies on it
   when it writes `ccgh.json` into the adoption worktree.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 In `hooks/rules/enforce-language.test.ts`, the word list the rule carries today moves, word for
 word, into the test file as a constant, and every case that expects a refusal of French passes
@@ -110,7 +110,7 @@ it("keeps the refused language a repository chose", async () => {
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test hooks/rules/enforce-language.test.ts src/commands/init.test.ts
@@ -121,7 +121,7 @@ built-in list; the two init cases fail because `init` never writes `language`. R
 language case's sentence with one taken from an existing refusing case and confirm it fails
 against the current rule, then put the German sentence back.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 In `hooks/rules/enforce-language.ts`, delete the `frenchWords` array and the comment above it,
 and read the list with no fallback but emptiness:
@@ -169,13 +169,13 @@ Then regenerate this repository's own files, which adds the key to its `ccgh.jso
 bun bin/ccgh init --from ./
 ```
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
 
 ```bash
 git add hooks src/commands/init.ts src/commands/init.test.ts README.md ccgh.json
