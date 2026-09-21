@@ -96,12 +96,20 @@ const pushTo = ({ reference, run }: { reference: string; run: Run }): void => {
 // throwaway and nobody notices; in a working clone, leaving it detached silently strands
 // whatever the person was doing — which it did, once, to the branch that wrote this comment.
 const standingOn = ({ run }: { run: Run }): string => {
-  const branch = run({ command: "git", args: ["rev-parse", "--abbrev-ref", "HEAD"] });
+  try {
+    const branch = run({ command: "git", args: ["rev-parse", "--abbrev-ref", "HEAD"] });
 
-  return branch === "HEAD" ? run({ command: "git", args: ["rev-parse", "HEAD"] }) : branch;
+    return branch === "HEAD" ? run({ command: "git", args: ["rev-parse", "HEAD"] }) : branch;
+  } catch {
+    // A clone whose HEAD points at a branch that has no commits yet: there is nowhere to
+    // return to, and asking is not worth failing the mirror over.
+    return "";
+  }
 };
 
 const standBackOn = ({ ref, run }: { ref: string; run: Run }): void => {
+  if (!ref) return;
+
   run({ command: "git", args: ["checkout", ref] });
 };
 
