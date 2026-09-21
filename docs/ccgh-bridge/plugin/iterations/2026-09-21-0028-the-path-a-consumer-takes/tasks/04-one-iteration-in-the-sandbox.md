@@ -28,7 +28,7 @@ is exactly the first iteration any repository writes.
 - Consumes: the installed plugin from task 3.
 - Produces: a `shipped` iteration in a repository that is not this one. Task 5 repairs whatever it broke.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 The test is the lifecycle itself, and it fails at the first gate that does not hold. Write
 down, before starting, which gates must hold:
@@ -42,11 +42,11 @@ down, before starting, which gates must hold:
 Gate 4 and gate 5 are the ones that have only ever run against this repository, with this
 repository's token, on this repository's branches.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 Not applicable. Say so rather than inventing a red.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 Do the five steps, in the sandbox, from a session with no flags. Use the skills rather than the
 commands directly wherever a skill exists: a consumer meets the skills first, and a skill that
@@ -55,13 +55,13 @@ reads badly is a defect this task is supposed to catch.
 Keep the transcript of anything that surprised you. That is what task 5 is for, and memory of
 a surprise is worth less than the line that caused it.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 The iteration reaches `status: shipped` in the sandbox, written by the bridge, with the issues
 closed and the `bot/ship` pull request merged.
 
 Then, in this repository, nothing. The proof lives there.
 
-- [ ] **Commit**
+- [x] **Commit**
 
 In the sandbox. Here, only the tick.

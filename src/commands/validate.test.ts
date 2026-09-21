@@ -51,9 +51,25 @@ describe("ccgh validate", () => {
     expect(await run({ argv: [], cwd: root })).toBe(1);
   });
 
-  it("says so when the content directory does not exist", async () => {
+  it("says so when a configured content directory does not exist", async () => {
+    await rm(join(root, content), { recursive: true });
+    await writeFile(join(root, "ccgh.json"), '{ "content": "docs/ccgh-bridge" }', "utf8");
+
+    expect(await run({ argv: [], cwd: root })).toBe(1);
+  });
+
+  it("accepts a repository that has not started yet", async () => {
     await rm(join(root, content), { recursive: true });
 
+    // A repository that has just run `ccgh init` has no content, and a red build on its first
+    // push is a bad first thing to happen. Nothing to validate is not the same as invalid.
+    expect(await run({ argv: [], cwd: root })).toBe(0);
+  });
+
+  it("still refuses a content directory that was configured and is not there", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "content": "elsewhere" }', "utf8");
+
+    // A repository that named its content directory and got it wrong is a typo, not a start.
     expect(await run({ argv: [], cwd: root })).toBe(1);
   });
 });

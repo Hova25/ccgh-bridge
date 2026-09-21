@@ -94,7 +94,11 @@ export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promi
   const file = join(repository, "ccgh.json");
   const current = existsSync(file) ? JSON.parse(await readFile(file, "utf8")) : {};
 
-  await writeFile(file, `${JSON.stringify({ ...current, action }, null, 2)}\n`, "utf8");
+  // Only when it has something to change: rewriting a file it did not change reformats it,
+  // and a repository whose formatter disagrees then fails its own lint for no reason.
+  if (current.action !== action) {
+    await writeFile(file, `${JSON.stringify({ ...current, action }, null, 2)}\n`, "utf8");
+  }
 
   for (const name of refused) {
     process.stderr.write(`refusing ${name}: it was not written by ccgh init\n`);

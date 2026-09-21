@@ -1,7 +1,5 @@
 {
-  "check": [
-    "bun run verify"
-  ],
+  "check": ["bun run verify"],
   "repository": "Hova25/ccgh-bridge",
   "site": "https://hova25.github.io/ccgh-bridge",
   "action": "./"

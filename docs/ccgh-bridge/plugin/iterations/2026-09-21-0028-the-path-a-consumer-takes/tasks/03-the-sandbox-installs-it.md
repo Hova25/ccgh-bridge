@@ -29,7 +29,7 @@ pointing at a tag rather than at `./`.
 - Consumes: the tags from task 1.
 - Produces: a sandbox repository with the plugin installed and five workflows pointing at `Hova25/ccgh-bridge@v1`. Task 4 works inside it.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 There is nothing to assert in this repository, and pretending otherwise would produce a test
 that asserts a string. The test is the sequence below, and it fails today at the first step
@@ -38,11 +38,11 @@ because `v1` did not exist until task 1.
 State before starting, in the pull request, what each step must print. A step whose expected
 output is written afterwards is a step that proved nothing.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 Not applicable, and saying so is better than inventing a red.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 ```bash
 gh repo create ccgh-sandbox --public --description "Proving the path a consumer takes" --clone
@@ -68,12 +68,12 @@ refusal is the proof that the command resolved the sandbox rather than this repo
 
 `ccgh init` must write five workflows saying `uses: Hova25/ccgh-bridge@v1`.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 Commit the workflows in the sandbox, push, and read the runs. `ccgh-validate` fires on the push
 and must resolve the action from the tag. That run is the deliverable of this task: everything
 before it was this repository testing itself.
 
-- [ ] **Commit**
+- [x] **Commit**
 
 In the sandbox. This repository's only change is ticking this file.
