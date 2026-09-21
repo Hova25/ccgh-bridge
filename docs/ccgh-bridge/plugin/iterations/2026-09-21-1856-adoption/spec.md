@@ -1,6 +1,6 @@
 ---
 title: Adoption
-status: active
+status: shipped
 depends_on: []
 impacts:
   - bridge
