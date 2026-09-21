@@ -1,8 +1,8 @@
 ---
 title: Make fix pull requests create their issue
 date: 2026-09-21
-issue: null
-pr: null
+issue: 87
+pr: 86
 ---
 
 # Make fix pull requests create their issue
