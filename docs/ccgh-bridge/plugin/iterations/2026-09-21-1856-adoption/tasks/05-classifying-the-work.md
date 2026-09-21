@@ -34,7 +34,7 @@ the same branch. It is the last task because it names the commands tasks 2 and 4
 - Produces: the instructions every adopted repository's sessions follow. Nothing in code
   depends on them.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 In `tests/plugin.test.ts`:
 
@@ -69,13 +69,13 @@ describe("taking a request for work", () => {
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test tests/plugin.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 In `src/templates/claude-md.md`, after the paragraph that ends "committed together with the
 code it records.", add:
@@ -166,13 +166,13 @@ Regenerate this repository's own block:
 bun bin/ccgh init --from ./
 ```
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
 
 ```bash
 git add src/templates/claude-md.md skills/open-fix/SKILL.md skills/open-iteration/SKILL.md CLAUDE.md tests/plugin.test.ts

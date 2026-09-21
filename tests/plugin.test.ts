@@ -223,3 +223,34 @@ describe("the README", () => {
     expect(readme).not.toMatch(/nothing is installable|not published yet|does not exist/i);
   });
 });
+
+describe("taking a request for work", () => {
+  const read = (path: string) => readFile(join(root, path), "utf8");
+
+  it("is described in the lifecycle rules init writes", async () => {
+    const block = await read("src/templates/claude-md.md");
+
+    expect(block).toContain("ccgh scaffold domain <name>");
+    expect(block).toMatch(/one line/);
+    expect(block).toMatch(/one or two files/);
+  });
+
+  it("lets both skills create a domain rather than stop", async () => {
+    for (const name of ["open-fix", "open-iteration"]) {
+      const skill = await read(`skills/${name}/SKILL.md`);
+
+      expect(skill, name).toContain("ccgh scaffold domain");
+      expect(skill, name).not.toMatch(/Never create a domain|Creating a domain is a\s+decision/);
+    }
+  });
+
+  it("scaffolds an iteration inside its worktree, at a prefix read before the worktree exists", async () => {
+    const skill = await read("skills/open-iteration/SKILL.md");
+
+    expect(skill).toContain("date -u +%Y-%m-%d-%H%M");
+    expect(skill).toContain("--at");
+    expect(skill.indexOf("git worktree add")).toBeLessThan(
+      skill.indexOf("ccgh scaffold iteration"),
+    );
+  });
+});
