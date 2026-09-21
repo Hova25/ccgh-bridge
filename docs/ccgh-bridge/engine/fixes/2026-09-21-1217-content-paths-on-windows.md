@@ -1,8 +1,8 @@
 ---
 title: Make content paths and line endings work on Windows
-date: 2026-09-21T00:00:00.000Z
-issue: null
-pr: 85
+date: 2026-09-21
+issue: 89
+pr: 86
 ---
 
 # Make content paths and line endings work on Windows
