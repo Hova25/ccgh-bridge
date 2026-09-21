@@ -4,9 +4,9 @@ order: 2
 issue: 118
 github:
   state: open
-  pr: null
-  merged_at: null
-  synced_at: '2026-09-21T20:16:01.311Z'
+  pr: 123
+  merged_at: '2026-09-21T20:18:49Z'
+  synced_at: '2026-09-21T20:37:18.923Z'
 ---
 
 # The domain scaffold
