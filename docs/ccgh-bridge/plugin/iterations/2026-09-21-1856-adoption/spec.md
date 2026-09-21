@@ -1,10 +1,12 @@
 ---
 title: Adoption
-status: draft
+status: ready
 depends_on: []
 impacts:
   - bridge
   - engine
+validated_by: unknown
+validated_at: '2026-09-21T20:04:35.911Z'
 ---
 
 # Adoption
