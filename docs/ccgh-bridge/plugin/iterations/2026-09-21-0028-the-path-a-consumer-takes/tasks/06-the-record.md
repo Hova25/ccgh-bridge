@@ -3,10 +3,10 @@ title: The record
 order: 6
 issue: 80
 github:
-  state: null
+  state: closed
   pr: null
   merged_at: null
-  synced_at: null
+  synced_at: '2026-09-21T00:51:22.913Z'
 ---
 
 # The record

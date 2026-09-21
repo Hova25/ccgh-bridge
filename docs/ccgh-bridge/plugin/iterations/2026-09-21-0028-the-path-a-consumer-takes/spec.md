@@ -1,6 +1,6 @@
 ---
 title: The path a consumer takes
-status: active
+status: shipped
 depends_on: []
 impacts:
   - site
