@@ -1,0 +1,51 @@
+name: release
+
+# plugin.json leads and the tags follow it. A release pull request can only bump the version:
+# the tag belongs on the merge commit, which exists once the pull request has merged. This is
+# the step that used to wait for someone to type it.
+
+on:
+  push:
+    branches: [main]
+    paths: [.claude-plugin/plugin.json]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Tag the version plugin.json declares, move the major tag, publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -r .version .claude-plugin/plugin.json)
+          tag="v$version"
+          major="v${version%%.*}"
+
+          # A push that touches the manifest without changing its version releases nothing.
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+            echo "$tag already exists; nothing to release"
+            exit 0
+          fi
+
+          previous=$(git describe --tags --abbrev=0 --match 'v*.*.*' "$GITHUB_SHA^" 2> /dev/null || true)
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag" -m "Release $version" "$GITHUB_SHA"
+          git tag -f "$major" "$GITHUB_SHA"
+          git push origin "refs/tags/$tag"
+          git push --force origin "refs/tags/$major"
+
+          gh release create "$tag" --verify-tag --latest --title "$tag" --generate-notes \
+            ${previous:+--notes-start-tag "$previous"}
