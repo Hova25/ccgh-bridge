@@ -1,7 +1,7 @@
 ---
 title: The pages workflow
 order: 2
-issue: null
+issue: 76
 github:
   state: null
   pr: null
