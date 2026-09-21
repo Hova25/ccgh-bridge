@@ -3,10 +3,10 @@ title: Fix records
 order: 6
 issue: 39
 github:
-  state: null
+  state: closed
   pr: null
   merged_at: null
-  synced_at: null
+  synced_at: '2026-09-21T00:10:39.085Z'
 ---
 
 # Fix records
