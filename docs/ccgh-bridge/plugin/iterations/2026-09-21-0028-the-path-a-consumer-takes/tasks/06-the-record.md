@@ -33,7 +33,7 @@ a decision with a shape.
 - Consumes: everything tasks 1 to 5 produced.
 - Produces: nothing. The iteration ends here.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 The assertion that would have caught the README drifting, which it has done twice:
 
@@ -45,13 +45,13 @@ it("does not say something is unpublished once it is", async () => {
 });
 ```
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test tests/plugin.test.ts
 ```
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 The README gains the install line that now works, the published site's URL, and the release
 procedure from task 1. It loses the sentence about `v1` not existing.
@@ -66,10 +66,10 @@ guess.
 Write the decision that is actually true, not the tidy one. If the answer is "not now, and
 here is what will make it urgent", that is a decision and it belongs on the record.
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
 ```
 
-- [ ] **Commit**
+- [x] **Commit**

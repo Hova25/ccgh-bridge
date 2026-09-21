@@ -89,12 +89,16 @@ refuses a release tag on a commit whose manifest disagrees with it.
 
 ## Status
 
-The engine, the plugin shell, the site and the bridge are done. This repository enables the
-plugin on itself and runs the workflows `ccgh init` writes for it, reaching its own action by
-path so that a change to the action is tested by the pull request that makes it.
+The engine, the plugin shell, the site and the bridge are done, released as `v1`, and proved
+from a repository that had never seen this code: it installed the plugin from the marketplace,
+ran `ccgh init`, and carried an iteration to `shipped` with its issues created and closed by
+the bridge. That trial is written up in
+[ccgh-sandbox](https://github.com/Hova25/ccgh-sandbox), including what it broke.
 
-Nothing is published yet: there is no `v1` tag, so `ccgh init` without `--from` points at a
-reference that does not exist. Tagging is a deliberate act and nobody has taken it.
+This repository's own content tree is published at
+[hova25.github.io/ccgh-bridge](https://hova25.github.io/ccgh-bridge/), and it reaches its own
+action by path rather than by tag, so a change to the action is tested by the pull request
+that makes it.
 
 This repository develops itself with its own workflow: its specifications, decisions and
 tasks live under `docs/ccgh-bridge/`, and every change to it goes through the lifecycle it
