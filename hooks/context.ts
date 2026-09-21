@@ -18,6 +18,7 @@ export type Context = {
 
 export type HookInput = {
   tool_name?: string;
+  cwd?: string;
   tool_input?: {
     command?: string;
     file_path?: string;

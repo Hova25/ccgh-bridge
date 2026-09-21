@@ -1,6 +1,6 @@
+import { commitCommand } from "../commit";
 import type { Decide } from "../context";
 
-const commitCommand = /(^|[;&|]\s*)git\s+(?:-[^\s]+\s+)*commit\b/;
 const checkable = /\.(ts|mts|mjs|astro)$/;
 
 export const decide: Decide = ({ input, context }) => {

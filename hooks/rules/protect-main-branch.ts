@@ -1,6 +1,5 @@
+import { commitCommand } from "../commit";
 import type { Decide } from "../context";
-
-const commitCommand = /(^|[;&|]\s*)git\s+(?:-[^\s]+\s+)*commit\b/;
 
 export const decide: Decide = ({ input, context }) => {
   const command = input?.tool_input?.command ?? "";

@@ -1,4 +1,8 @@
 import { describe, expect, it } from "bun:test";
+import { execFileSync } from "node:child_process";
+import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const entry = fileURLToPath(new URL("./run.ts", import.meta.url));
@@ -64,6 +68,41 @@ describe("the hook entry point", () => {
 
     expect(await child.exited).toBe(0);
     expect(written.hookSpecificOutput.permissionDecision).toBe("ask");
+  });
+
+  it("judges the branch of the directory a cd leads the commit into", async () => {
+    const root = await mkdtemp(join(tmpdir(), "ccgh-hook-"));
+    const repository = async ({ name, branch }: { name: string; branch: string }) => {
+      const directory = join(root, name);
+
+      await mkdir(directory);
+      execFileSync("git", ["init", "-q", "-b", branch], { cwd: directory });
+      // An unborn branch has no HEAD to name, and the hook refuses what it cannot read.
+      execFileSync(
+        "git",
+        ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "i"],
+        { cwd: directory },
+      );
+
+      return directory;
+    };
+
+    const clone = await repository({ name: "clone", branch: "main" });
+    const worktree = await repository({ name: "fix", branch: "fix/plugin/x" });
+
+    const fromClone = await invoke({
+      rule: "protect-main-branch",
+      input: { cwd: clone, tool_input: { command: `cd "${worktree}" && git commit -m x` } },
+    });
+    const intoClone = await invoke({
+      rule: "protect-main-branch",
+      input: { cwd: worktree, tool_input: { command: `git -C "${clone}" commit -m x` } },
+    });
+
+    await rm(root, { recursive: true, force: true });
+
+    expect(fromClone.code).toBe(0);
+    expect(intoClone.code).toBe(2);
   });
 
   it("reads a Windows path the way it reads any other", async () => {
