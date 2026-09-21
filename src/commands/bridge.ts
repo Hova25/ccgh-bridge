@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { applyActions } from "../bridge/apply";
 import { completionComment, completionsFor } from "../bridge/completion";
 import {
@@ -402,6 +402,21 @@ export const run = async ({
     process.stderr.write(`${(error as Error).message}\n`);
 
     return 1;
+  }
+
+  // The same line `ccgh validate` draws: a repository that has not started has nothing to
+  // mirror, and one that named its content directory and got it wrong has a typo. relink reads
+  // GitHub alone, so it never needs the tree.
+  if (verb !== "relink" && !existsSync(settings.root)) {
+    if (configuration({ from: cwd }).content) {
+      process.stderr.write(`no content directory at ${settings.root}\n`);
+
+      return 1;
+    }
+
+    process.stdout.write(`no content yet at ${settings.root}: nothing to mirror\n`);
+
+    return 0;
   }
 
   const [owner = "", repo = ""] = settings.repository.split("/");

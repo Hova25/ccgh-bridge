@@ -64,6 +64,32 @@ describe("ccgh bridge", () => {
     ).toBe("elsewhere");
   });
 
+  it("succeeds with nothing to mirror in a repository that has no content yet", async () => {
+    await rm(join(root, "docs"), { recursive: true });
+
+    for (const verb of ["push", "sync", "fixes", "complete", "reconcile"]) {
+      expect(
+        await run({
+          argv: [verb],
+          cwd: root,
+          env: { GITHUB_TOKEN: "x", GITHUB_REPOSITORY: "o/r" },
+        }),
+      ).toBe(0);
+    }
+  });
+
+  it("refuses when the content directory ccgh.json names does not exist", async () => {
+    await writeFile(join(root, "ccgh.json"), '{ "content": "elsewhere" }', "utf8");
+
+    expect(
+      await run({
+        argv: ["push"],
+        cwd: root,
+        env: { GITHUB_TOKEN: "x", GITHUB_REPOSITORY: "o/r" },
+      }),
+    ).toBe(1);
+  });
+
   it("refuses to mirror a tree that does not validate", async () => {
     await writeFile(
       join(root, "docs", "ccgh-bridge", "engine", "index.md"),
