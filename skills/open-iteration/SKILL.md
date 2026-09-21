@@ -13,43 +13,44 @@ the iteration is worth nothing until that prose is written. If the work has not 
 brainstormed, stop and brainstorm it first: a specification written straight into a skeleton is
 a specification nobody argued with.
 
-1. Check the domain exists by listing the content directory — `docs/ccgh-bridge/` unless
-   `ccgh.json` names another one:
+1. Read the prefix, the UTC clock to the minute, and name the iteration with it:
 
    ```bash
-   ls docs/ccgh-bridge
+   date -u +%Y-%m-%d-%H%M
    ```
 
-   If the domain is not there, stop and list the ones that are. Creating a domain is a
-   decision, not a side effect of scaffolding one iteration.
+   The reference is `<domain>/<prefix>-<slug>`, and the worktree is named after it with the
+   slash turned into a dash.
 
-2. Cut the branch from an updated `main`:
+2. Cut the branch and its worktree from an updated `main`, and move into it:
 
    ```bash
    git switch main && git pull --ff-only
+   git worktree add ../worktrees/<domain>-<prefix>-<slug> -b <domain>/<prefix>-<slug> main
+   cd ../worktrees/<domain>-<prefix>-<slug>
    ```
 
-   The branch is named after the iteration, which is only known once the command has resolved
-   the date, so it is cut in step 4.
+   Everything that follows runs inside it; nothing is written in the clone.
 
-3. Scaffold the brainstorm and the specification:
+3. Check that the domain exists by listing the content directory — `docs/ccgh-bridge/` unless
+   `ccgh.json` names another one. When it does not, create it here, so that it arrives with the
+   iteration:
 
    ```bash
-   ccgh scaffold iteration $target
+   ccgh scaffold domain <domain>
    ```
 
-   It prints the files it wrote and then the reference, `<domain>/<yyyy-mm-dd-HHMM>-<slug>`.
-   That reference is what every later command takes, and what the worktree is named after.
+   Replace the summary it writes with one sentence naming what the domain owns.
 
-4. Cut the branch, using the reference the command printed:
+4. Scaffold the brainstorm and the specification at the prefix of step 1:
 
    ```bash
-   git worktree add ../worktrees/<domain>-<iteration> -b <reference> main
-   cd ../worktrees/<domain>-<iteration>
+   ccgh scaffold iteration $target --at <prefix>
    ```
 
-   The worktree is named after the branch with the slash turned into a dash. Everything that
-   follows runs inside it.
+   It prints the files it wrote and then the reference, which must be the branch's name. It
+   refuses an iteration that already exists at that prefix; read the clock again and start
+   over rather than suffixing it by hand.
 
 5. Write the brainstorm, then the specification, replacing every `<…>` placeholder. Use the
    `superpowers:brainstorming` and `/ccgh:write-spec` skills rather than filling the headings

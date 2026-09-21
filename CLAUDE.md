@@ -61,6 +61,22 @@ is shipped with `/ccgh:ship-iteration <domain>/<iteration>`, which opens the pul
 `main` carrying a `Closes` line for every task. A change too small to specify is a fix, opened
 with `/ccgh:open-fix <domain>/<slug>` and committed together with the code it records.
 
+### Taking a request for work
+
+When asked for a change, decide before touching anything, and say it in one line — "a fix in
+`listings`", "an iteration in `billing`, a new domain" — then proceed without waiting:
+
+- A change to one or two files that takes no decision is a fix. Anything else is an
+  iteration: several files, a choice between approaches, work someone else would need
+  explained.
+- The domain is the existing one that owns the code the work touches; list `docs/ccgh-bridge/` to
+  see them. When none does, create one with `ccgh scaffold domain <name>` in the worktree of the
+  work, and replace the summary it leaves with one sentence saying what the domain owns. It
+  travels in the same pull request as the work, where it can be refused.
+
+A repository that has just run `ccgh init` has one domain, `ccgh`, holding the iteration that
+adopts it; that iteration is validated and launched before any other work reaches `main`.
+
 Validation and launch are human gates: those two skills cannot be invoked by the model, only
 typed by a human.
 
