@@ -9,7 +9,11 @@ export const commitCommand = new RegExp(
   String.raw`(^|[;&|]\s*)git\s+(?:(?:-[Cc]\s+${word}|-[^\s]+)\s+)*commit\b`,
 );
 
-const changeDirectory = new RegExp(String.raw`(?:^|[;&|]\s*)cd\s+(${word})`, "g");
+// The PowerShell tool moves with Set-Location and its aliases, optionally naming the parameter.
+const changeDirectory = new RegExp(
+  String.raw`(?:^|[;&|]\s*)(?:cd|chdir|pushd|sl|set-location|push-location)\s+(?:-(?:literal)?path\s+)?(${word})`,
+  "gi",
+);
 const gitDirectory = new RegExp(String.raw`-C\s+(${word})`, "g");
 
 const unquoted = (value: string) => value.replace(/^(["'])(.*)\1$/, "$2");

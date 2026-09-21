@@ -2,7 +2,7 @@ import { isAbsolute, relative, sep } from "node:path";
 import type { Context, Decide } from "../context";
 
 const skippedTest = /\b(?:it|test|describe)\.(?:skip|todo)\b|\bxit\b|\bxdescribe\b/;
-const deletedTest = /\brm\b[^\n]*\.(?:test|spec)\.[cm]?[jt]sx?\b/;
+const deletedTest = /\b(?:rm|del|erase|ri|remove-item)\b[^\n]*\.(?:test|spec)\.[cm]?[jt]sx?\b/i;
 // The harness is whatever decides how the assistant behaves: the session's own configuration
 // and, in a repository that carries the plugin, the plugin itself.
 const harness = [".claude/", ".claude-plugin/", "hooks/", "skills/"];

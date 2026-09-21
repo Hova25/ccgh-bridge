@@ -43,6 +43,15 @@ describe("commitDirectory", () => {
     );
   });
 
+  it("follows PowerShell's Set-Location and its aliases", () => {
+    expect(
+      commitDirectory({ command: "Set-Location -Path ../worktrees/d; git commit", cwd: session }),
+    ).toBe(resolve("/work/worktrees/d"));
+    expect(commitDirectory({ command: "sl ../worktrees/e; git commit -m x", cwd: session })).toBe(
+      resolve("/work/worktrees/e"),
+    );
+  });
+
   it("ignores a cd that comes after the commit", () => {
     expect(commitDirectory({ command: "git commit -m x && cd /elsewhere", cwd: session })).toBe(
       session,
