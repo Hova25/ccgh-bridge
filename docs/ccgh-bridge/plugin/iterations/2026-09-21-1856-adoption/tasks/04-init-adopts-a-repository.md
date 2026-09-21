@@ -4,9 +4,9 @@ order: 4
 issue: 120
 github:
   state: open
-  pr: null
-  merged_at: null
-  synced_at: '2026-09-21T20:16:01.308Z'
+  pr: 125
+  merged_at: '2026-09-21T20:33:43Z'
+  synced_at: '2026-09-21T20:37:34.770Z'
 ---
 
 # Init adopts a repository
