@@ -1,8 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { relative } from "node:path";
 import { configuration } from "../src/configuration";
-import { contentRoot, repositoryRoot } from "../src/project";
+import { contentDirectory } from "../src/project";
 import type { Context } from "./context";
 
 const git = (...args: string[]): string => execFileSync("git", args, { encoding: "utf8" }).trim();
@@ -34,7 +33,7 @@ export const shell: Context = {
       })
       .join("\n")
       .trim(),
-  content: () => relative(repositoryRoot({ from: project() }), contentRoot({ from: project() })),
+  content: () => contentDirectory({ from: project() }),
   fileExists: (file) => existsSync(file),
   configuration: () => configuration({ from: project() }),
 };

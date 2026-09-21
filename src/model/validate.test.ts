@@ -35,6 +35,37 @@ describe("validate", () => {
     expect(validate(await loadContent(root))).toEqual([]);
   });
 
+  it("reads a tree checked out with Windows line endings the way it reads any other", async () => {
+    const crlf = (text: string): string => text.replaceAll("\n", "\r\n");
+    const root = await tree({
+      "harness/index.md": crlf("---\ntitle: Harness\nsummary: The system itself\n---\n"),
+      "harness/iterations/2026-09-13-1529-bootstrap/spec.md": crlf(validSpec),
+      "harness/iterations/2026-09-13-1529-bootstrap/tasks/01-a.md": crlf(
+        [
+          "---",
+          "title: A",
+          "order: 1",
+          "---",
+          "",
+          "# A",
+          "",
+          "What it does.",
+          "",
+          "**Files**",
+          "",
+          "- Create: a.ts",
+          "",
+          "**Interfaces**",
+          "",
+          "- Produces: a",
+          "",
+        ].join("\n"),
+      ),
+    });
+
+    expect(validate(await loadContent(root))).toEqual([]);
+  });
+
   it("reports every schema failure rather than the first", async () => {
     const root = await tree({
       "harness/index.md": "---\ntitle: Harness\n---\n",

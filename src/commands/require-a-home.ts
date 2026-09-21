@@ -1,6 +1,5 @@
-import { relative } from "node:path";
 import { DATED_NAME, SLUG } from "../model/schemas";
-import { contentRoot, repositoryRoot } from "../project";
+import { contentDirectory } from "../project";
 
 export type Home = {
   kind: "iteration-branch" | "iteration" | "fix" | "content-only";
@@ -43,8 +42,7 @@ export const homeOf = ({
 
 export const run = async ({ argv, cwd }: { argv: string[]; cwd: string }): Promise<number> => {
   const [base = "", ...changed] = argv;
-  const root = repositoryRoot({ from: cwd });
-  const content = relative(root, contentRoot({ from: cwd }));
+  const content = contentDirectory({ from: cwd });
   const home = homeOf({ base, changed, content });
 
   if (!home) {

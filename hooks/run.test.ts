@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
+import { fileURLToPath } from "node:url";
 
-const entry = new URL("./run.ts", import.meta.url).pathname;
+const entry = fileURLToPath(new URL("./run.ts", import.meta.url));
 
 const invoke = async ({ rule, input }: { rule: string; input: unknown }) => {
   const child = Bun.spawn(["bun", entry, rule], { stdin: "pipe", stderr: "pipe" });
@@ -63,5 +64,19 @@ describe("the hook entry point", () => {
 
     expect(await child.exited).toBe(0);
     expect(written.hookSpecificOutput.permissionDecision).toBe("ask");
+  });
+
+  it("reads a Windows path the way it reads any other", async () => {
+    const { code } = await invoke({
+      rule: "protect-generated-frontmatter",
+      input: {
+        tool_input: {
+          file_path: "C:\\repo\\docs\\ccgh-bridge\\engine\\fixes\\a.md",
+          content: "---\nissue: 3\n---\n",
+        },
+      },
+    });
+
+    expect(code).toBe(2);
   });
 });
