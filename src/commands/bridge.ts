@@ -162,7 +162,8 @@ const runSync = async ({ root, content, client, dryRun }: World) => {
 };
 
 // No generated workflow sets BRIDGE_ARRIVING, so the branch itself is asked. The workflow
-// checks out with the whole history, which is what makes origin/main resolvable here.
+// checks out with the whole history, which is what makes origin/main resolvable here. Only
+// added files arrive: a record the branch merely edits already belongs to another pull request.
 export const filesArriving = ({
   declared,
   run = shell,
@@ -171,7 +172,11 @@ export const filesArriving = ({
   run?: (input: { command: string; args: string[] }) => string;
 }): string[] => {
   const listed =
-    declared ?? run({ command: "git", args: ["diff", "--name-only", "origin/main...HEAD"] });
+    declared ??
+    run({
+      command: "git",
+      args: ["diff", "--name-only", "--diff-filter=A", "origin/main...HEAD"],
+    });
 
   return listed.split(/\s+/).filter(Boolean);
 };

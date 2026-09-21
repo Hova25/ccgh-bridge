@@ -16,12 +16,15 @@ wired has an issue. The same run also rewrote each record's `date: 2026-09-21` a
 timestamp.
 
 When `BRIDGE_ARRIVING` is absent, the bridge now asks the branch itself:
-`git diff --name-only origin/main...HEAD`, which the `ccgh-fixes` workflow makes resolvable by
-checking out the whole history. The variable still wins when a workflow sets it. Consumers need
-no new `ccgh init`: the change is in the action their workflows already call.
+`git diff --name-only --diff-filter=A origin/main...HEAD`, which the `ccgh-fixes` workflow
+makes resolvable by checking out the whole history. The variable still wins when a workflow
+sets it. Consumers need no new `ccgh init`: the change is in the action their workflows
+already call.
 
-Every front matter write now keeps a day as a day. The two records that were rewritten this
-way, the fixes behind #84 and #85, are put back by hand here.
+Only added files arrive, and this pull request is why. Its first version asked for every
+changed file, and it also restores the `date` of the two records behind #84 and #85: the
+bridge took both as arriving here, opened #88 and #89 for them, and wrote this pull request's
+number over the ones that carried them. Those two records keep the issues they were given, which
+this merge closes; their `pr` is the bridge's to write, so it is not corrected by hand here.
 
-The fixes already merged without an issue are not given one after the fact: an issue created
-and closed in the same minute records nothing their pull requests do not.
+Every front matter write now keeps a day as a day.

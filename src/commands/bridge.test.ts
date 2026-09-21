@@ -95,7 +95,9 @@ describe("the files a fix pull request brings", () => {
 
   // No generated workflow has ever set BRIDGE_ARRIVING, so without this every fix pull
   // request brought nothing, and no fix ever had its issue.
-  it("are what the branch changed since main, when the workflow named none", () => {
+  // Added, not changed: a fix that corrects an older record would otherwise open an issue for
+  // that record and stamp its own pull request over the one that really carried it.
+  it("are what the branch added since main, when the workflow named none", () => {
     const asked: string[][] = [];
     const files = filesArriving({
       declared: undefined,
@@ -105,7 +107,9 @@ describe("the files a fix pull request brings", () => {
       },
     });
 
-    expect(asked).toEqual([["git", "diff", "--name-only", "origin/main...HEAD"]]);
+    expect(asked).toEqual([
+      ["git", "diff", "--name-only", "--diff-filter=A", "origin/main...HEAD"],
+    ]);
     expect(files).toEqual(["docs/ccgh-bridge/engine/fixes/2026-09-21-1200-a.md", "src/a.ts"]);
   });
 });
