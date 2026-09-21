@@ -1,8 +1,8 @@
 ---
 title: Stop reconcile reporting fixes under review as abandoned
 date: 2026-09-21
-issue: null
-pr: null
+issue: 91
+pr: 90
 ---
 
 # Stop reconcile reporting fixes under review as abandoned
