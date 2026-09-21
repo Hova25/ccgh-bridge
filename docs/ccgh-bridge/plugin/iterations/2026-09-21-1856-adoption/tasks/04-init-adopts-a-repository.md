@@ -34,7 +34,7 @@ the rollback, and is tested against real repositories.
   reference, and `/ccgh:validate-iteration <reference>` on its own line; exit 1 with the cause
   on stderr otherwise. Task 5's `CLAUDE.md` block and README describe it.
 
-- [ ] **Write the failing test**
+- [x] **Write the failing test**
 
 In `src/commands/init.test.ts`, the existing `beforeEach` also creates the default content
 directory, so every existing case keeps today's behaviour:
@@ -136,7 +136,7 @@ describe("ccgh init on a repository that has not adopted ccgh", () => {
 with `execFileSync` from `node:child_process`, and `existsSync` and `readdirSync` from
 `node:fs`, imported at the top of the file.
 
-- [ ] **Run it to verify it fails**
+- [x] **Run it to verify it fails**
 
 ```bash
 bun test src/commands/init.test.ts
@@ -145,7 +145,7 @@ bun test src/commands/init.test.ts
 The first adoption case finds no worktree, since `init` writes into the clone; the refusal
 cases get exit 0.
 
-- [ ] **Write the implementation**
+- [x] **Write the implementation**
 
 In `src/commands/init.ts`, rename the present `run` to `install`, unchanged, and add:
 
@@ -267,7 +267,7 @@ task is choosing the repository's checks, commits it, and names the next command
 only rewrites what it owns.
 ```
 
-- [ ] **Run the tests to verify they pass**
+- [x] **Run the tests to verify they pass**
 
 ```bash
 bun run verify
@@ -280,7 +280,7 @@ bun <path to this worktree>/bin/ccgh init
 git -C ../worktrees/ccgh-*-adopt-ccgh log --stat -1
 ```
 
-- [ ] **Commit**
+- [x] **Commit**
 
 ```bash
 git add src/commands/init.ts src/commands/init.test.ts README.md

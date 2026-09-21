@@ -43,6 +43,14 @@ file is created if there is none, the block is appended to one that exists, and 
 replaces only the block, so the repository's own instructions around it are never touched.
 Without it the hooks refuse mistakes, but nothing tells the session how the work moves.
 
+On a repository that has no content directory yet, `init` adopts it rather than writing into
+the clone. It refuses unless the clone is on `main` with nothing in progress, then creates the
+branch `ccgh/<yyyy-mm-dd-HHMM>-adopt-ccgh` and its worktree in `../worktrees/`, writes there the
+workflows, `ccgh.json`, the `CLAUDE.md` block and a first iteration, `adopt-ccgh`, whose one
+task is choosing the repository's checks, commits it, and names the next command,
+`/ccgh:validate-iteration`. It pushes nothing. On a repository that has adopted ccgh, a re-run
+only rewrites what it owns.
+
 The workflows reach the engine through `uses:`, so the repository clones nothing and installs
 nothing; this repository must be public for that, or the workflow needs a token of its own.
 

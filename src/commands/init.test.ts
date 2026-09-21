@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { execFileSync } from "node:child_process";
+import { existsSync, readdirSync } from "node:fs";
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -11,6 +13,7 @@ const workflows = join(".github", "workflows");
 beforeEach(async () => {
   root = await mkdtemp(join(tmpdir(), "ccgh-init-"));
   await mkdir(join(root, ".git"));
+  await mkdir(join(root, "docs", "ccgh-bridge"), { recursive: true });
 });
 
 afterEach(async () => {
@@ -165,6 +168,7 @@ describe("ccgh init and CLAUDE.md", () => {
 
   it("names the content directory the repository configured", async () => {
     await writeFile(join(root, "ccgh.json"), '{ "content": "handbook" }', "utf8");
+    await mkdir(join(root, "handbook"));
 
     await run({ argv: [], cwd: root });
 
@@ -280,5 +284,89 @@ describe("ccgh init and the repository's checks", () => {
 
     expect(written).not.toContain("setup-");
     expect(written).toContain("run: npm run lint");
+  });
+});
+
+describe("ccgh init on a repository that has not adopted ccgh", () => {
+  let base = "";
+  let clone = "";
+
+  const git = (args: string[], cwd = clone) =>
+    execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+
+  beforeEach(async () => {
+    base = await mkdtemp(join(tmpdir(), "ccgh-adopt-"));
+    clone = join(base, "clone");
+    await mkdir(clone);
+    git(["init", "-q", "-b", "main"]);
+    git(["config", "user.name", "t"]);
+    git(["config", "user.email", "t@t"]);
+    await writeFile(join(clone, "README.md"), "# r\n", "utf8");
+    git(["add", "README.md"]);
+    git(["commit", "-q", "-m", "first"]);
+  });
+
+  afterEach(async () => {
+    await rm(base, { recursive: true, force: true });
+  });
+
+  const worktrees = () =>
+    existsSync(join(base, "worktrees")) ? readdirSync(join(base, "worktrees")) : [];
+
+  it("commits the adoption on its own branch and worktree, leaving the clone clean on main", async () => {
+    expect(await run({ argv: [], cwd: clone })).toBe(0);
+
+    const [worktree = ""] = worktrees();
+
+    expect(worktree).toMatch(/^ccgh-\d{4}-\d{2}-\d{2}-\d{4}-adopt-ccgh$/);
+    expect(git(["status", "--porcelain"])).toBe("");
+    expect(git(["rev-parse", "--abbrev-ref", "HEAD"])).toBe("main");
+
+    const inside = join(base, "worktrees", worktree);
+    const committed = git(["show", "--name-only", "--format=%s", "HEAD"], inside).split("\n");
+
+    expect(committed[0]).toBe("Adopt ccgh");
+    expect(committed).toContain(".github/workflows/ccgh-validate.yml");
+    expect(committed).toContain("ccgh.json");
+    expect(committed).toContain("CLAUDE.md");
+    expect(committed).toContain("docs/ccgh-bridge/ccgh/index.md");
+    expect(git(["rev-parse", "--abbrev-ref", "HEAD"], inside)).toBe(`ccgh/${worktree.slice(5)}`);
+    expect(git(["status", "--porcelain"], inside)).toBe("");
+  });
+
+  it("refuses a clone with changes in progress, and writes nothing", async () => {
+    await writeFile(join(clone, "wip.txt"), "x", "utf8");
+
+    expect(await run({ argv: [], cwd: clone })).toBe(1);
+    expect(worktrees()).toEqual([]);
+  });
+
+  it("refuses a clone that is not on main", async () => {
+    git(["switch", "-q", "-c", "elsewhere"]);
+
+    expect(await run({ argv: [], cwd: clone })).toBe(1);
+    expect(worktrees()).toEqual([]);
+  });
+
+  it("refuses a repository with no commit", async () => {
+    const empty = join(base, "empty");
+
+    await mkdir(empty);
+    git(["init", "-q", "-b", "main"], empty);
+
+    expect(await run({ argv: [], cwd: empty })).toBe(1);
+    expect(worktrees()).toEqual([]);
+  });
+
+  it("removes the worktree and the branch when the commit fails", async () => {
+    // A hook that refuses every commit, which the worktree shares with the clone.
+    await writeFile(join(clone, ".git", "hooks", "pre-commit"), "#!/bin/sh\nexit 1\n", {
+      mode: 0o755,
+    });
+
+    expect(await run({ argv: [], cwd: clone })).toBe(1);
+    expect(worktrees()).toEqual([]);
+    expect(git(["branch", "--list", "ccgh/*"])).toBe("");
+    expect(git(["worktree", "list"]).split("\n")).toHaveLength(1);
   });
 });
