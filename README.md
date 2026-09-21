@@ -83,15 +83,21 @@ directly by Bun — there is no build step and no compiled binary to download.
 
 ## Releasing it
 
-`plugin.json` carries the version and leads; the tags follow it. Bump it, merge, then:
-
-```
-git tag -a v1.2.3 -m "<what changed>" && git tag -f v1
-git push origin v1.2.3 && git push -f origin v1
-```
+`plugin.json` carries the version and leads; the tags follow it. Bump it in a pull request and
+merge it: the `release` workflow then tags the merge commit `v1.2.3`, moves `v1` onto it, and
+publishes the GitHub release with notes listing the pull requests since the previous version.
+A merge that leaves the version alone releases nothing.
 
 `v1` is the moving major tag a consumer pins to, `v1.2.3` the one that never moves. A test
 refuses a release tag on a commit whose manifest disagrees with it.
+
+Should the workflow fail, the same release by hand, from the merge commit, is:
+
+```
+git tag -a v1.2.3 -m "Release 1.2.3" && git tag -f v1
+git push origin v1.2.3 && git push -f origin v1
+gh release create v1.2.3 --verify-tag --generate-notes
+```
 
 ## Status
 
