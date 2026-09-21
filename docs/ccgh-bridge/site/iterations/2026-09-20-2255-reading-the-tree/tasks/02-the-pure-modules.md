@@ -3,10 +3,10 @@ title: The pure modules
 order: 2
 issue: 52
 github:
-  state: null
+  state: closed
   pr: null
   merged_at: null
-  synced_at: null
+  synced_at: '2026-09-21T00:10:55.438Z'
 ---
 
 # The pure modules
