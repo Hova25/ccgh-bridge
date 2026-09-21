@@ -9,6 +9,7 @@ const context = ({ branch, files }: { branch: string; files: string[] }): Contex
   currentBranch: () => branch,
   stagedFiles: () => files,
   content: () => content,
+  repository: () => "/repo",
   check: () => "",
   fileExists: () => true,
   configuration: () => ({}),

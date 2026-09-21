@@ -1,4 +1,5 @@
-import type { Decide } from "../context";
+import { isAbsolute, relative, sep } from "node:path";
+import type { Context, Decide } from "../context";
 
 const skippedTest = /\b(?:it|test|describe)\.(?:skip|todo)\b|\bxit\b|\bxdescribe\b/;
 const deletedTest = /\brm\b[^\n]*\.(?:test|spec)\.[cm]?[jt]sx?\b/;
@@ -6,13 +7,19 @@ const deletedTest = /\brm\b[^\n]*\.(?:test|spec)\.[cm]?[jt]sx?\b/;
 // and, in a repository that carries the plugin, the plugin itself.
 const harness = [".claude/", ".claude-plugin/", "hooks/", "skills/"];
 
-export const decide: Decide = ({ input }) => {
+// Claude Code sends absolute paths, and the harness prefixes only mean something from the
+// repository root: matching them anywhere in the path would also catch `src/hooks/`.
+const fromRepository = ({ file, context }: { file: string; context: Context }) =>
+  isAbsolute(file) ? relative(context.repository(), file).split(sep).join("/") : file;
+
+export const decide: Decide = ({ input, context }) => {
   const {
-    file_path: file = "",
+    file_path: absolute = "",
     new_string: newString,
     content,
     command = "",
   } = input?.tool_input ?? {};
+  const file = fromRepository({ file: absolute, context });
   const text = content ?? newString ?? "";
 
   if (deletedTest.test(command)) {

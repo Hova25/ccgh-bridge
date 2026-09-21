@@ -9,6 +9,7 @@ export type Context = {
   // The content directory, relative to the repository root. The engine resolves it; a rule
   // receives it already resolved so that it never reads a file system to make a decision.
   content: () => string;
+  repository: () => string;
   fileExists: (file: string) => boolean;
   // What the repository asked for. Read once, at the entry point, so that a rule stays a
   // decision rather than a reader of files.

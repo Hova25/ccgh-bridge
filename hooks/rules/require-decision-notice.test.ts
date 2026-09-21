@@ -38,6 +38,30 @@ describe("require-decision-notice", () => {
     ).toMatch(/harness/);
   });
 
+  it("asks before the harness changes when the path arrives absolute", () => {
+    expect(
+      decide({
+        context: fake({ repository: () => "/repo" }),
+        input: edit({ file: "/repo/.claude/settings.json", newString: "{}" }),
+      }),
+    ).toMatch(/harness/);
+    expect(
+      decide({
+        context: fake({ repository: () => "/repo" }),
+        input: edit({ file: "/repo/hooks/run.ts", newString: "exit(0);" }),
+      }),
+    ).toMatch(/harness/);
+  });
+
+  it("stays silent on a hooks directory that is not the plugin's", () => {
+    expect(
+      decide({
+        context: fake({ repository: () => "/repo" }),
+        input: edit({ file: "/repo/src/hooks/use-total.ts", newString: "export {};" }),
+      }),
+    ).toBeNull();
+  });
+
   it("asks before a test is skipped", () => {
     expect(
       decide({
