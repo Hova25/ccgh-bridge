@@ -3,10 +3,10 @@ title: The domain scaffold
 order: 2
 issue: 118
 github:
-  state: open
+  state: closed
   pr: 123
   merged_at: '2026-09-21T20:18:49Z'
-  synced_at: '2026-09-21T20:37:18.923Z'
+  synced_at: '2026-09-21T20:39:06.222Z'
 ---
 
 # The domain scaffold

@@ -3,10 +3,10 @@ title: The adoption content
 order: 3
 issue: 119
 github:
-  state: open
+  state: closed
   pr: 124
   merged_at: '2026-09-21T20:24:56Z'
-  synced_at: '2026-09-21T20:37:26.355Z'
+  synced_at: '2026-09-21T20:39:06.221Z'
 ---
 
 # The adoption content

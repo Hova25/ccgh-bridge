@@ -3,10 +3,10 @@ title: No refused language by default
 order: 1
 issue: 117
 github:
-  state: open
+  state: closed
   pr: 122
   merged_at: '2026-09-21T20:15:44Z'
-  synced_at: '2026-09-21T20:37:10.409Z'
+  synced_at: '2026-09-21T20:39:06.222Z'
 ---
 
 # No refused language by default

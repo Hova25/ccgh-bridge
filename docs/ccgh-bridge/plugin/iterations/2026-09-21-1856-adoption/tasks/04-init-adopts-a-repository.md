@@ -3,10 +3,10 @@ title: Init adopts a repository
 order: 4
 issue: 120
 github:
-  state: open
+  state: closed
   pr: 125
   merged_at: '2026-09-21T20:33:43Z'
-  synced_at: '2026-09-21T20:37:34.770Z'
+  synced_at: '2026-09-21T20:39:06.220Z'
 ---
 
 # Init adopts a repository

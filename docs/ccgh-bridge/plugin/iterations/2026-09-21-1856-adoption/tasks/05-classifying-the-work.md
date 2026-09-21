@@ -3,10 +3,10 @@ title: Classifying the work
 order: 5
 issue: 121
 github:
-  state: open
+  state: closed
   pr: 126
   merged_at: '2026-09-21T20:36:02Z'
-  synced_at: '2026-09-21T20:37:42.225Z'
+  synced_at: '2026-09-21T20:39:06.223Z'
 ---
 
 # Classifying the work
