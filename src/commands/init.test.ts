@@ -106,4 +106,23 @@ describe("ccgh init", () => {
 
     expect(await readFile(join(root, workflows, "ccgh-pages.yml"), "utf8")).toBe("name: mine\n");
   });
+
+  it("makes the sync fire on a merge as well as on the issue it closed", async () => {
+    await run({ argv: [], cwd: root });
+
+    const sync = await readFile(join(root, workflows, "ccgh-sync.yml"), "utf8");
+
+    expect(sync).toMatch(/push:\s*\n\s*branches: \[main\]/);
+  });
+
+  it("leaves ccgh.json alone when it has nothing to change there", async () => {
+    const formatted = '{ "check": ["bun run lint"], "action": "Hova25/ccgh-bridge@v1" }\n';
+    await writeFile(join(root, "ccgh.json"), formatted, "utf8");
+
+    await run({ argv: [], cwd: root });
+
+    // Rewriting a file it did not change reformats it, and a repository whose formatter
+    // disagrees then fails its own lint for no reason.
+    expect(await readFile(join(root, "ccgh.json"), "utf8")).toBe(formatted);
+  });
 });
