@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import matter from "gray-matter";
+import { stringifyFrontMatter } from "../model/front-matter";
 
 export type MirrorState = {
   state: "open" | "closed";
@@ -33,10 +34,10 @@ const edit = async ({
 
   change(data);
 
-  let written = matter.stringify(parsed.content, data);
+  let written = stringifyFrontMatter({ content: parsed.content, data });
 
   for (const key of days) {
-    written = written.replace(new RegExp(`^${key}: '(\\d{4}-\\d{2}-\\d{2})'$`, "m"), `${key}: $1`);
+    written = written.replace(new RegExp(`^${key}: "(\\d{4}-\\d{2}-\\d{2})"$`, "m"), `${key}: $1`);
   }
 
   await writeFile(path, written, "utf8");

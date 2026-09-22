@@ -2,7 +2,7 @@ name: ccgh-push
 
 on:
   push:
-    branches-ignore: [main, 'fix/**']
+    branches-ignore: [main, "fix/**"]
 
 permissions:
   contents: write

@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import matter from "gray-matter";
+import { stringifyFrontMatter } from "../model/front-matter";
 import { type LoadedContent, loadContent } from "../model/load";
 import { validate } from "../model/validate";
 import { contentRoot } from "../project";
@@ -113,7 +114,7 @@ export const applyPromotion = async ({
     data.launched_tasks = plan.taskFiles;
   }
 
-  await writeFile(path, matter.stringify(parsed.content, data), "utf8");
+  await writeFile(path, stringifyFrontMatter({ content: parsed.content, data }), "utf8");
 };
 
 const describe = (plan: PromotionPlan): string => {
