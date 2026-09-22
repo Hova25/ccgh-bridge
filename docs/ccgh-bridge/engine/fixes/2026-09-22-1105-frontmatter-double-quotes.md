@@ -1,8 +1,8 @@
 ---
 title: Write double-quoted YAML so a consumer's Prettier accepts it
 date: 2026-09-22
-issue: null
-pr: null
+issue: 132
+pr: 131
 ---
 
 # Write double-quoted YAML so a consumer's Prettier accepts it
