@@ -229,6 +229,15 @@ describe("ccgh promote", () => {
     expect(written).toContain("validated_by:");
   });
 
+  it("quotes what it writes the way Prettier does by default", async () => {
+    await run({ argv: ["engine/2026-01-01-0900-probe", "--to", "ready"], cwd: root });
+
+    const written = await readFile(join(root, spec), "utf8");
+
+    expect(written).toMatch(/^validated_at: "\d{4}-\d{2}-\d{2}T[\d:.]+Z"$/m);
+    expect(written).not.toContain("'");
+  });
+
   it("writes nothing on a dry run", async () => {
     const before = await readFile(join(root, spec), "utf8");
 

@@ -17,11 +17,13 @@
     "@octokit/rest": "^22.0.1",
     "astro": "^7.3.3",
     "gray-matter": "^4.0.3",
+    "js-yaml": "^4",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@types/bun": "^1.4.2",
+    "@types/js-yaml": "^4.0.9",
     "typescript": "^7.0.2"
   }
 }
