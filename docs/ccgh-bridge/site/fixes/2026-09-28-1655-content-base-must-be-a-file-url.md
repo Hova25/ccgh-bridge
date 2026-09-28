@@ -1,8 +1,8 @@
 ---
 title: Give the content loader a file URL rather than a path
 date: 2026-09-28
-issue: null
-pr: null
+issue: 136
+pr: 135
 ---
 
 # Give the content loader a file URL rather than a path
